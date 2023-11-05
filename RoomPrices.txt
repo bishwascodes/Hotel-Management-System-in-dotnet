@@ -1,0 +1,3 @@
+Single, $80
+Double, $100
+Suite, $120

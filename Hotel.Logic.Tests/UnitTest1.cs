@@ -1,4 +1,4 @@
-namespace tests;
+namespace Hotel.Logic.Tests;
 
 public class UnitTest1
 {

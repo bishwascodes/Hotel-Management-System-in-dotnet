@@ -1,9 +1,6 @@
 ﻿// CS1400 - Fall 2023 - Bishwas Thapa
 
-string roomsFile = "..\\Rooms.txt";
-string reservationsFile = "..\\Reservations.txt";
-string customersFile = "..\\Customers.txt";
-string roomPricesFile = "..\\RoomPrices.txt";
+
 
 List<(int roomNumber, RoomType type)> roomList = ReadRoomFile(roomsFile);
 List<(Guid reservationNumber, DateTime date, int roomNumber, string customerName, string paymentConfirmation)> reservationList = ReadReservationsFile(reservationsFile);
@@ -26,7 +23,7 @@ reservationList.Add((Guid.NewGuid(), DateTime.Now, 101, "Micheal Johnesn", Gener
 customersList.Add(("Micheal Johnesn", 1234567890123456));
 
 
-roomList.Add((105, RoomType.Suite));
+roomList.Add((106, RoomType.Suite));
 reservationList.Add((Guid.NewGuid(), DateTime.Now, 101, "Peter Malan", GenerateRandomString(30)));
 customersList.Add(("Peter Malan", 1234567890123456));
 

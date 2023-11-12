@@ -1,4 +1,4 @@
 ﻿// CS1400 - Fall 2023 - Bishwas Thapa
+using Hotel.Logic;
 
-Console.WriteLine("Hello World! Welcome to my program");
 

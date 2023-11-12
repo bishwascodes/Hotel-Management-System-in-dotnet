@@ -10,7 +10,7 @@ public class LogicClass
     public static string roomPricesFile = "..\\RoomPrices.txt";
 
     public static List<(int roomNumber, string type)> roomList = DataClass.ReadRoomFile(roomsFile);
-    public static List<(Guid reservationNumber, DateTime date, int roomNumber, string customerName, string paymentConfirmation)> reservationList = DataClass.ReadReservationsFile(reservationsFile);
+    public static List<(Guid reservationNumber, DateOnly date, int roomNumber, string customerName, string paymentConfirmation)> reservationList = DataClass.ReadReservationsFile(reservationsFile);
     public static List<(string customerName, long cardNumber)> customersList = DataClass.ReadCustomersFile(customersFile);
     public static List<(string roomType, decimal dailyRate)> roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
 
@@ -21,7 +21,7 @@ public class LogicClass
     {
         roomList.Add((roomData.Item1, roomData.Item2));
     }
-    public static void addToReservationList((Guid, DateTime, int, string, string) reservationData)
+    public static void addToReservationList((Guid, DateOnly, int, string, string) reservationData)
     {
         reservationList.Add((reservationData.Item1, reservationData.Item2, reservationData.Item3, reservationData.Item4, reservationData.Item5));
     }
@@ -32,6 +32,20 @@ public class LogicClass
     public static void addToRoomPrice((string roomType, decimal dailyRate) roomPriceDatas)
     {
         roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate));
+    }
+
+
+    // For x-unit testing
+
+    public static void UpdateReservationsFile(string filePath, List<(Guid reservationNumber, DateOnly date, int roomNumber, string customerName, string paymentConfirmation)> reservationList)
+    {
+        List<string> lines = new List<string>();
+        foreach (var reservation in reservationList)
+        {
+            string line = $"{reservation.reservationNumber},{reservation.date},{reservation.roomNumber},{reservation.customerName},{reservation.paymentConfirmation}";
+            lines.Add(line);
+        }
+        File.WriteAllLines(filePath, lines);
     }
 
 

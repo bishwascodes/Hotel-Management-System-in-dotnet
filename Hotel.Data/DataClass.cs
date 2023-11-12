@@ -13,7 +13,8 @@ public class DataClass
             foreach (string line in lines)
             {
                 string[] parts = line.Split(',');
-                if (parts.Length == 2 && int.TryParse(parts[0], out int roomNumber) && Enum.TryParse(parts[1], out string roomType))
+                string roomType = parts[1];
+                if (parts.Length == 2 && int.TryParse(parts[0], out int roomNumber))
                 {
                     roomList.Add((roomNumber, roomType));
                 }
@@ -23,9 +24,9 @@ public class DataClass
         return roomList;
     }
 
-    public static List<(Guid reservationNumber, DateTime date, int roomNumber, string customerName, string paymentConfirmation)> ReadReservationsFile(string filePath)
+    public static List<(Guid reservationNumber, DateOnly date, int roomNumber, string customerName, string paymentConfirmation)> ReadReservationsFile(string filePath)
     {
-        List<(Guid reservationNumber, DateTime date, int roomNumber, string customerName, string paymentConfirmation)> reservationList = new List<(Guid reservationNumber, DateTime date, int roomNumber, string customerName, string paymentConfirmation)>();
+        List<(Guid reservationNumber, DateOnly date, int roomNumber, string customerName, string paymentConfirmation)> reservationList = new List<(Guid reservationNumber, DateOnly date, int roomNumber, string customerName, string paymentConfirmation)>();
 
         if (File.Exists(filePath))
         {
@@ -33,7 +34,7 @@ public class DataClass
             foreach (string line in lines)
             {
                 string[] parts = line.Split(',');
-                if (parts.Length == 5 && Guid.TryParse(parts[0], out Guid reservationNumber) && DateTime.TryParse(parts[1], out DateTime date) &&
+                if (parts.Length == 5 && Guid.TryParse(parts[0], out Guid reservationNumber) && DateOnly.TryParse(parts[1], out DateOnly date) &&
                     int.TryParse(parts[2], out int roomNumber) && !string.IsNullOrEmpty(parts[3]) && !string.IsNullOrEmpty(parts[4]))
                 {
                     reservationList.Add((reservationNumber, date, roomNumber, parts[3], parts[4]));
@@ -74,7 +75,8 @@ public class DataClass
             foreach (string line in lines)
             {
                 string[] parts = line.Split(',');
-                if (parts.Length == 2 && Enum.TryParse(parts[0], out string roomType) && decimal.TryParse(parts[1], out decimal dailyRate))
+                string roomType = parts[0];
+                if (parts.Length == 2 && decimal.TryParse(parts[1], out decimal dailyRate))
                 {
                     roomPrices.Add((roomType, dailyRate));
                 }
@@ -96,7 +98,7 @@ public class DataClass
         File.WriteAllLines(filePath, lines);
     }
 
-    public static void UpdateReservationsFile(string filePath, List<(Guid reservationNumber, DateTime date, int roomNumber, string customerName, string paymentConfirmation)> reservationList)
+    public static void UpdateReservationsFile(string filePath, List<(Guid reservationNumber, DateOnly date, int roomNumber, string customerName, string paymentConfirmation)> reservationList)
     {
         List<string> lines = new List<string>();
         foreach (var reservation in reservationList)

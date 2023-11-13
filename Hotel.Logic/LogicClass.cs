@@ -54,6 +54,24 @@ public class LogicClass
 
 
     // Methods 
+
+    public static bool RoomIsAvailable(DateOnly bookingDate, int roomNumber)
+    {
+        var newReservationDate = bookingDate;
+        var newReservationRoom = roomNumber;
+        var reservationFileData = LogicClass.reservationList;
+        bool isAvailable = true;
+        foreach (var data in reservationFileData)
+        {
+            if (data.date == newReservationDate && data.roomNumber == newReservationRoom)
+            {
+                isAvailable = false;
+                break;
+            }
+
+        }
+        return isAvailable;
+    }
     public static string GenerateRandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

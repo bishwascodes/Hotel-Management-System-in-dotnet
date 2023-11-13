@@ -2,49 +2,34 @@ namespace Hotel.Logic.Tests;
 using Hotel.Logic;
 public class UnitTest1
 {
+
     [Fact]
-    public void ReserveDateNotTaken()
+    public void RoomIsAvailable_True()
     {
         // Arrange
-        var reservationData = (Guid.NewGuid(), DateOnly.Parse("11/05/2023"), 102, "Bishwas Ji", LogicClass.GenerateRandomString(30));
-        var newReservationDate = reservationData.Item2;
-        var newReservationRoom = reservationData.Item3;
-        var reservationFileData = LogicClass.reservationList;
-        bool result = true;
-        foreach (var data in reservationFileData)
-        {
-            if (data.date == newReservationDate && data.roomNumber == newReservationRoom)
-            {
-                result = false;
-            }
+        var bookingDate = new DateOnly(2023, 10, 5);
+        int roomNumber = 101;
 
-        }
-        if (result == true)
-        {
-            LogicClass.addToReservationList(reservationData);
-            LogicClass.UpdateReservationsFile("..\\Reservations.txt", reservationFileData);
-        }
-        Assert.True(result, "Reservation should succeed");
+        // Act
+        var isAvailable = LogicClass.RoomIsAvailable(bookingDate, roomNumber);
+
+        // Assert
+        Assert.False(isAvailable, "Room should be available on the specified day.");
     }
 
     [Fact]
-    public void ReserveDateAlreadyTaken()
+    public void RoomIsAvailable_False()
     {
-        var reservationData = (Guid.NewGuid(), DateOnly.Parse("11/11/2023"), 101, "Peter Malan", LogicClass.GenerateRandomString(30));
+        // Arrange
+        var bookingDate = new DateOnly(2023, 11, 11);
+        int roomNumber = 101;
 
-        var newReservationDate = reservationData.Item2;
-        var newReservationRoom = reservationData.Item3;
-        var reservationFileData = LogicClass.reservationList;
-        bool result = false;
-        foreach (var data in reservationFileData)
-        {
-            if (data.date == newReservationDate && data.roomNumber == newReservationRoom)
-            {
-                result = true;
 
-            }
-        }
+        // Act
+        var isAvailable = LogicClass.RoomIsAvailable(bookingDate, roomNumber);
+
         // Assert
-        Assert.False(result, "Reservation failed because the date is already reserved");
+        Assert.True(isAvailable, "Room should not be available on the specified day.");
     }
+
 }

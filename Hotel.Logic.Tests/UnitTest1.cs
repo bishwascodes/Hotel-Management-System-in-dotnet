@@ -6,30 +6,37 @@ public class UnitTest1
     [Fact]
     public void RoomIsAvailable_True()
     {
-        // Arrange
+
         var bookingDate = new DateOnly(2023, 10, 5);
         int roomNumber = 101;
+        LogicClass.reservationList.Clear();
 
-        // Act
         var isAvailable = LogicClass.RoomIsAvailable(bookingDate, roomNumber);
 
         // Assert
-        Assert.False(isAvailable, "Room should be available on the specified day.");
+        Assert.True(isAvailable, "Room should be available on the specified day.");
     }
 
     [Fact]
     public void RoomIsAvailable_False()
     {
-        // Arrange
-        var bookingDate = new DateOnly(2023, 11, 11);
+
+        var bookingDate = new DateOnly(2024, 11, 11);
         int roomNumber = 101;
-
-
-        // Act
+        LogicClass.reservationList.Clear();
+        LogicClass.reservationList.Add((Guid.NewGuid(), bookingDate, roomNumber, "Bishwas Thapa", "HFHDSBfHFUEFSNSSYBFRBHSIS"));
         var isAvailable = LogicClass.RoomIsAvailable(bookingDate, roomNumber);
+        if (isAvailable == false)
+        {
+            Assert.True(true, "Room should be available on the specified day.");
+        }
+        else
+        {
+            // Assert
 
-        // Assert
-        Assert.True(isAvailable, "Room should not be available on the specified day.");
+            Assert.Fail("Room should not be available on the specified day.");
+        }
+
     }
 
 }

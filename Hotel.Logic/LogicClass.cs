@@ -25,7 +25,7 @@ public class LogicClass
     {
         reservationList.Add((reservationData.Item1, reservationData.Item2, reservationData.Item3, reservationData.Item4, reservationData.Item5));
     }
-    public static void addToCustomers((string, int) customerData)
+    public static void addToCustomers((string, long) customerData)
     {
         customersList.Add((customerData.Item1, customerData.Item2));
     }
@@ -35,18 +35,6 @@ public class LogicClass
     }
 
 
-    // For x-unit testing
-
-    public static void UpdateReservationsFile(string filePath, List<(Guid reservationNumber, DateOnly date, int roomNumber, string customerName, string paymentConfirmation)> reservationList)
-    {
-        List<string> lines = new List<string>();
-        foreach (var reservation in reservationList)
-        {
-            string line = $"{reservation.reservationNumber},{reservation.date},{reservation.roomNumber},{reservation.customerName},{reservation.paymentConfirmation}";
-            lines.Add(line);
-        }
-        File.WriteAllLines(filePath, lines);
-    }
 
 
 
@@ -59,11 +47,27 @@ public class LogicClass
     {
         var newReservationDate = bookingDate;
         var newReservationRoom = roomNumber;
-        var reservationFileData = LogicClass.reservationList;
+        var reservationFileData = reservationList;
         bool isAvailable = true;
         foreach (var data in reservationFileData)
         {
             if (data.date == newReservationDate && data.roomNumber == newReservationRoom)
+            {
+                isAvailable = false;
+                break;
+            }
+
+        }
+        return isAvailable;
+    }
+    public static bool CustomerIsAvailable(string name)
+    {
+      
+        var customerFileData = customersList;
+        bool isAvailable = true;
+        foreach (var data in customerFileData)
+        {
+            if (data.customerName.ToLower() == name.ToLower())
             {
                 isAvailable = false;
                 break;

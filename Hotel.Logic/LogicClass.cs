@@ -10,7 +10,7 @@ public class LogicClass
     public static string roomPricesFile = "..\\RoomPrices.txt";
 
     public static List<(int roomNumber, string type)> roomList = DataClass.ReadRoomFile(roomsFile);
-    public static List<(Guid reservationNumber, DateOnly date, int roomNumber, string customerName, string paymentConfirmation)> reservationList = DataClass.ReadReservationsFile(reservationsFile);
+    public static List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation)> reservationList = DataClass.ReadReservationsFile(reservationsFile);
     public static List<(string customerName, long cardNumber)> customersList = DataClass.ReadCustomersFile(customersFile);
     public static List<(string roomType, decimal dailyRate)> roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
 
@@ -21,9 +21,9 @@ public class LogicClass
     {
         roomList.Add((roomData.Item1, roomData.Item2));
     }
-    public static void addToReservationList((Guid, DateOnly, int, string, string) reservationData)
+    public static void addToReservationList((Guid, DateOnly, DateOnly, int, string, string) reservationData)
     {
-        reservationList.Add((reservationData.Item1, reservationData.Item2, reservationData.Item3, reservationData.Item4, reservationData.Item5));
+        reservationList.Add((reservationData.Item1, reservationData.Item2, reservationData.Item3, reservationData.Item4, reservationData.Item5, reservationData.Item6));
     }
     public static void addToCustomers((string, long) customerData)
     {
@@ -32,6 +32,33 @@ public class LogicClass
     public static void addToRoomPrice((string roomType, decimal dailyRate) roomPriceDatas)
     {
         roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate));
+    }
+    // Removing items from each list 
+    // public static void addToRoom((int, string) roomData)
+    // {
+    //     roomList.Add((roomData.Item1, roomData.Item2));
+    // }
+    // public static void addToReservationList((Guid, DateOnly, int, string, string) reservationData)
+    // {
+    //     reservationList.Add((reservationData.Item1, reservationData.Item2, reservationData.Item3, reservationData.Item4, reservationData.Item5));
+    // }
+    public static void removeFromCustomers(string nameToRemove)
+    {
+
+        customersList.RemoveAll(customer => customer.Item1.Equals(nameToRemove, StringComparison.OrdinalIgnoreCase));
+
+    }
+    // public static void addToRoomPrice((string roomType, decimal dailyRate) roomPriceDatas)
+    // {
+    //     roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate));
+    // }
+
+    public static void saveAllToFiles()
+    {
+        DataClass.UpdateCustomersFile(customersFile, customersList);
+        DataClass.UpdateRoomFile(roomsFile, roomList);
+        DataClass.UpdateReservationsFile(reservationsFile, reservationList);
+        DataClass.UpdateRoomPricesFile(roomPricesFile, roomPrices);
     }
 
 
@@ -42,32 +69,77 @@ public class LogicClass
 
 
     // Methods 
-
-    public static bool RoomIsAvailable(DateOnly bookingDate, int roomNumber)
+    public static List<(int, string)> availableRoomsList(DateOnly checkingDate)
     {
-        var newReservationDate = bookingDate;
+        List<(int, string)> rooms = new();
+        List<int> numbers = new();
+        foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
+        {
+            if (checkingDate >= startDate && checkingDate < endDate)
+            {
+                numbers.Add(roomNumber);
+            }
+        }
+        List<(int, string)> tempRoomList = new();
+        foreach ((int, string) roomItem in roomList)
+        {
+            tempRoomList.Add(roomItem);
+        }
+        foreach (int number in numbers)
+        {
+            tempRoomList.RemoveAll(item => item.Item1 == number);
+        }
+        // Check if tempRoomList is empty, and if so, return a new empty list
+        return tempRoomList.Count > 0 ? tempRoomList : new List<(int, string)>();
+    }
+    public static bool RoomIsAvailable(DateOnly bookingStartDate, DateOnly bookingEndDate, int roomNumber)
+    {
+        var newReservationStartDate = bookingStartDate;
+        var newReservationEndDate = bookingEndDate;
         var newReservationRoom = roomNumber;
         var reservationFileData = reservationList;
         bool isAvailable = true;
         foreach (var data in reservationFileData)
         {
-            if (data.date == newReservationDate && data.roomNumber == newReservationRoom)
+            if (data.roomNumber == newReservationRoom)
             {
-                isAvailable = false;
+                // to make it exclusive i.e if user books for 11/15/2024-11/16/2024, we count it only a day
+                // 11/16/2024 is actually allowed to book
+                if (!(data.startDate >= newReservationEndDate || newReservationStartDate >= data.endDate))
+                {
+                    isAvailable = false;
+                    break;
+                }
+
+            }
+
+        }
+        return isAvailable;
+    }
+    public static bool CustomerAlreadyAvailable(string name)
+    {
+
+        var customerFileData = customersList;
+        bool isAvailable = false;
+        foreach (var data in customerFileData)
+        {
+            if (data.customerName.ToLower().Trim() == name.ToLower())
+            {
+                isAvailable = true;
                 break;
             }
 
         }
         return isAvailable;
     }
-    public static bool CustomerIsAvailable(string name)
+    public static bool RoomAvailableToCreate(int roomNumber)
     {
-      
-        var customerFileData = customersList;
+
+        var roomsFileData = roomList;
         bool isAvailable = true;
-        foreach (var data in customerFileData)
+        foreach (var data in roomsFileData)
         {
-            if (data.customerName.ToLower() == name.ToLower())
+            if (data.roomNumber == roomNumber)
             {
                 isAvailable = false;
                 break;

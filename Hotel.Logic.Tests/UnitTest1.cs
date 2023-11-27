@@ -46,7 +46,7 @@ public class UnitTest1
         long cardNumber = 125385425685;
         LogicClass.customersList.Clear();
         // When
-        if (LogicClass.CustomerIsAvailable(name))
+        if (LogicClass.CustomerAlreadyAvailable(name))
         {
             LogicClass.addToCustomers((name, cardNumber));
         }
@@ -60,9 +60,9 @@ public class UnitTest1
         string name = ("Test Name");
         long cardNumber = 125385425685;
         LogicClass.customersList.Clear();
-        LogicClass.customersList.Add(("Test Name",125385425685));
+        LogicClass.customersList.Add(("Test Name", 125385425685));
         // When
-        if (LogicClass.CustomerIsAvailable(name))
+        if (LogicClass.CustomerAlreadyAvailable(name))
         {
             LogicClass.addToCustomers((name, cardNumber));
         }

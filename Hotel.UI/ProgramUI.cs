@@ -20,89 +20,22 @@ do
             {
                 if (userChoice == 1)
                 {
-                    Console.Clear();
-                    Console.WriteLine("*** Customer Management *** Add New Customer  *** \n Please enter the customer details below or Press X to exit.: ");
-                    string name = "";
-                    while (true)
-                    {
-                        name = getString("Please, Enter the name of your customer: ");
-                        if (name != "X" && name != "x")
-                        {
-                            if (!LogicClass.CustomerAlreadyAvailable(name))
-                            {
-                                break;
-                            }
-                            Console.WriteLine($"The customer with the same name '{name}' already exists.");
-                            Console.Write("Press any key to continue");
-                            Console.ReadKey(true);
-                            Console.WriteLine();
-                            recentMessage = "\nMessage: Couldn't add new customer\n";
-                            break;
-                        }
-                        break;
-                    }
-                    if (!LogicClass.CustomerAlreadyAvailable(name) && name != "X" && name != "x")
-                    {
-                        long cardNumber = getLong(Prompt: "Please, Enter the card Number: ");
-                        LogicClass.addToCustomers((name, cardNumber));
-                    }
-                    recentMessage = "\nMessage: New customer Successfully Added\n";
+                    addNewCustomerUI();
                     break;
                 }
                 else if (userChoice == 2)
                 {
-                    Console.Clear();
-                    Console.WriteLine("*** Customer Management *** Customer Details  *** \n [Name************************] [********Card Number*******]");
-                    foreach ((string name, long id) in LogicClass.customersList)
-                    {
-                        Console.WriteLine($"[ {name,-30}] [{id,30}]");
-                    }
-                    Console.Write("press eny key to return back. ");
-                    Console.ReadKey(true);
-                    recentMessage = "";
+                    customersDetailsUI();
                     break;
-
                 }
 
                 else if (userChoice == 3)
                 {
-                    Console.Clear();
-                    Console.WriteLine("*** Customer Management *** Remove a Customer  *** \nPlease enter the customer details below or Press X to exit.: ");
-                    string name = "";
-                    while (true)
-                    {
-
-                        name = getString("Please, Enter the name of your customer: ");
-                        if (name != "X" && name != "x")
-                        {
-                            if (LogicClass.CustomerAlreadyAvailable(name))
-                            {
-                                Console.Write($"Warning! You're about to delete the customer \"{name}\" from database. \nPress 'Y' to Proceed or any other Key to return back: ");
-                                string input = Console.ReadLine();
-                                if (input == "Y" || input == "y")
-                                {
-                                    LogicClass.removeFromCustomers(name);
-
-                                }
-                                recentMessage = "\nMessage: The customer was deleted successfully.\n";
-                                break;
-                            }
-                            else
-                            {
-                                Console.WriteLine($"The customer with the name {name} doesn't exist. Please recheck and enter again.");
-                                recentMessage = "\nMessage: Couldn't delete the customer.\n";
-                            }
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
+                    removeACustomerUI();
                     break;
                 }
                 else if (userChoice == 4)
                 {
-
                     break;
                 }
             }
@@ -127,28 +60,7 @@ do
             {
                 if (userChoice == 1)
                 {
-                    Console.Clear();
-                    Console.WriteLine("*** Room Management *** Add New Room  *** \n Please enter the room below or Press X to exit.: ");
-                    int roomNum;
-                    while (true)
-                    {
-                        roomNum = getInt(Prompt: "Please, Enter the new room number: ");
-
-                        if (!LogicClass.RoomAvailableToCreate(roomNum))
-                        {
-                            Console.WriteLine($"The room with the same number '{roomNum}' already exists.");
-                            Console.Write("Press any key to continue");
-                            Console.ReadKey(true);
-                            Console.WriteLine();
-                            recentMessage = "\nMessage: Couldn't add new room.\n";
-                            break;
-                        }
-                        string roomType = getString("Please enter the room type: ");
-                        LogicClass.addToRoom((roomNum, roomType));
-                        recentMessage = "\nMessage: New Room Successfully added.\n";
-                        break;
-
-                    }
+                    addANewRoomUI();
                     break;
                 }
                 else if (userChoice == 4)
@@ -176,51 +88,7 @@ do
             {
                 if (userChoice == 1)
                 {
-                    Console.Clear();
-                    Console.WriteLine("*** Reservation Management *** Add New Reservation  *** \n Please enter the room below or Press X to exit.: ");
-                    int roomNum;
-                    DateOnly startDate;
-                    DateOnly endDate;
-                    while (true)
-                    {
-                        roomNum = getInt(Prompt: "Please, Enter the room number that you want to book: ");
-                        if (LogicClass.RoomAvailableToCreate(roomNum))
-                        {
-                            Console.Write("The room number that you entered doesn't exist. Please create one to proceed booking. Press any key to continue: ");
-                            Console.ReadKey(true);
-                            recentMessage = "\nMessage: Booking can't proceed. Please make a new room. \n";
-                            break;
-                        }
-                        startDate = getDate("Please, Enter the starting date: ");
-                        endDate = getDate("Please, Enter the ending date: ");
-                        if (endDate < startDate)
-                        {
-                            Console.Write("Invalid Input of the date. Press any key to continue: ");
-                            Console.ReadKey(true);
-                            Console.WriteLine();
-                            continue;
-                        }
-                        if (!LogicClass.RoomIsAvailable(startDate, endDate, roomNum))
-                        {
-                            Console.WriteLine($"The room '{roomNum}' is already booked on between '{startDate}'-'{endDate}'.");
-                            Console.Write("Press any key to continue");
-                            Console.ReadKey(true);
-                            recentMessage = "\nMessage: Couldn't make the new reservation.\n";
-                            break;
-                        }
-                        string customerName = getString("Please enter the customer name: ");
-                        if (!LogicClass.CustomerAlreadyAvailable(customerName))
-                        {
-                            Console.Write("The user doesn't exist. Please create one to proceed booking. Press any key to continue: ");
-                            Console.ReadKey(true);
-                            recentMessage = "\nMessage: Booking can't proceed. Please make a new user. \n";
-                            break;
-                        }
-                        LogicClass.addToReservationList((Guid.NewGuid(), startDate, endDate, roomNum, customerName, LogicClass.GenerateRandomString(30)));
-                        recentMessage = $"\nMessage: New Reservation for {customerName} Successfully added.\n";
-                        break;
-
-                    }
+                    addNewReservationUI();
                     break;
                 }
                 else if (userChoice == 2)
@@ -274,57 +142,12 @@ do
                 }
                 else if (userChoice == 4)
                 {
-                    Console.Clear();
-                    Console.WriteLine("***  Reservation Management  *** Reservation Report by Date  *** \n ");
-                    DateOnly checkingDate = getDate("Please enter the date to check the report: ");
-
-                    Console.WriteLine($"\nReservation details for the date {checkingDate} \n\n(P.S. Th end date doesn't count as it's free to book on end date.)\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]\n");
-                    int no_of_results = 0;
-                    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
-                    {
-                        if (checkingDate >= startDate && checkingDate < endDate)
-                        {
-                            no_of_results++;
-                            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}]");
-
-                        }
-                    }
-                    if (no_of_results == 0)
-                    {
-                        Console.WriteLine($"Sorry! No reservations found on given date - '{checkingDate}' . ");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"\nTotal {no_of_results} reservations found on given date - '{checkingDate}' . ");
-                    }
-                    Console.Write("press eny key to return back. ");
-                    Console.ReadKey(true);
-                    recentMessage = "";
+                    reservationReportByDateUI();
                     break;
                 }
                 else if (userChoice == 5)
                 {
-                    Console.Clear();
-                    Console.WriteLine("***  Reservation Management  *** Available Room Search by Date  *** \n ");
-                    DateOnly checkingDate = getDate("Please enter the date to search: ");
-                    var availableRoomLists = LogicClass.availableRoomsList(checkingDate);
-                    if (availableRoomLists.Count == 0)
-                    {
-                        Console.WriteLine($"Sorry! No any rooms available to book for the day '{checkingDate}'. ");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"\nHere's the list of available rooms to book for the day '{checkingDate}'. \n");
-                        Console.WriteLine($"[Room No.] [Room Type]");
-                        foreach (var item in availableRoomLists)
-                        {
-                            Console.WriteLine($"[{item.Item1,8}] [{item.Item2,9}]");
-                        }
-                        Console.WriteLine($"\n{availableRoomLists.Count} numbers of rooms are available.");
-                    }
-                    Console.Write("\npress eny key to return back. ");
-                    Console.ReadKey(true);
-                    recentMessage = "";
+                    availableRoomSearchByDateUI();
                     break;
                 }
                 else if (userChoice == 6)
@@ -406,9 +229,210 @@ DateOnly getDate(string prompt = "")
 
 }
 
+// UI Components
+void addNewCustomerUI()
+{
+    Console.Clear();
+    Console.WriteLine("*** Customer Management *** Add New Customer  *** \n Please enter the customer details below or Press X to exit.: ");
+    string name = "";
+    while (true)
+    {
+        name = getString("Please, Enter the name of your customer: ");
+        if (name != "X" && name != "x")
+        {
+            if (!LogicClass.CustomerAlreadyAvailable(name))
+            {
+                break;
+            }
+            Console.WriteLine($"The customer with the same name '{name}' already exists.");
+            Console.Write("Press any key to continue");
+            Console.ReadKey(true);
+            Console.WriteLine();
+            recentMessage = "\nMessage: Couldn't add new customer\n";
+            break;
+        }
+        break;
+    }
+    if (!LogicClass.CustomerAlreadyAvailable(name) && name != "X" && name != "x")
+    {
+        long cardNumber = getLong(Prompt: "Please, Enter the card Number: ");
+        LogicClass.addToCustomers((name, cardNumber));
+    }
+    recentMessage = "\nMessage: New customer Successfully Added\n";
+}
 
 
+void customersDetailsUI()
+{
+    Console.Clear();
+    Console.WriteLine("*** Customer Management *** Customer Details  *** \n[*************Name**************] [**********Card Number*********]");
+    foreach ((string name, long id) in LogicClass.customersList)
+    {
+        Console.WriteLine($"[ {name,-30}] [{id,30}]");
+    }
+    Console.Write("press eny key to return back. ");
+    Console.ReadKey(true);
+    recentMessage = "";
 
+}
+void removeACustomerUI()
+{
+    Console.Clear();
+    Console.WriteLine("*** Customer Management *** Remove a Customer  *** \nPlease enter the customer details below or Press X to exit.: ");
+    string name = "";
+    while (true)
+    {
 
+        name = getString("Please, Enter the name of your customer: ");
+        if (name != "X" && name != "x")
+        {
+            if (LogicClass.CustomerAlreadyAvailable(name))
+            {
+                Console.Write($"Warning! You're about to delete the customer \"{name}\" from database. \nPress 'Y' to Proceed or any other Key to return back: ");
+                string input = Console.ReadLine();
+                if (input == "Y" || input == "y")
+                {
+                    LogicClass.removeFromCustomers(name);
 
+                }
+                recentMessage = "\nMessage: The customer was deleted successfully.\n";
+                break;
+            }
+            else
+            {
+                Console.WriteLine($"The customer with the name {name} doesn't exist. Please recheck and enter again.");
+                recentMessage = "\nMessage: Couldn't delete the customer.\n";
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+void addANewRoomUI()
+{
+    Console.Clear();
+    Console.WriteLine("*** Room Management *** Add New Room  *** \n Please enter the room below or Press X to exit.: ");
+    int roomNum;
+    while (true)
+    {
+        roomNum = getInt(Prompt: "Please, Enter the new room number: ");
 
+        if (!LogicClass.RoomAvailableToCreate(roomNum))
+        {
+            Console.WriteLine($"The room with the same number '{roomNum}' already exists.");
+            Console.Write("Press any key to continue");
+            Console.ReadKey(true);
+            Console.WriteLine();
+            recentMessage = "\nMessage: Couldn't add new room.\n";
+            break;
+        }
+        string roomType = getString("Please enter the room type: ");
+        LogicClass.addToRoom((roomNum, roomType));
+        recentMessage = "\nMessage: New Room Successfully added.\n";
+        break;
+
+    }
+}
+void addNewReservationUI()
+{
+    Console.Clear();
+    Console.WriteLine("*** Reservation Management *** Add New Reservation  *** \n Please enter the room below or Press X to exit.: ");
+    int roomNum;
+    DateOnly startDate;
+    DateOnly endDate;
+    while (true)
+    {
+        roomNum = getInt(Prompt: "Please, Enter the room number that you want to book: ");
+        if (LogicClass.RoomAvailableToCreate(roomNum))
+        {
+            Console.Write("The room number that you entered doesn't exist. Please create one to proceed booking. Press any key to continue: ");
+            Console.ReadKey(true);
+            recentMessage = "\nMessage: Booking can't proceed. Please make a new room. \n";
+            break;
+        }
+        startDate = getDate("Please, Enter the starting date: ");
+        endDate = getDate("Please, Enter the ending date: ");
+        if (endDate < startDate)
+        {
+            Console.Write("Invalid Input of the date. Press any key to continue: ");
+            Console.ReadKey(true);
+            Console.WriteLine();
+            continue;
+        }
+        if (!LogicClass.RoomIsAvailable(startDate, endDate, roomNum))
+        {
+            Console.WriteLine($"The room '{roomNum}' is already booked on between '{startDate}'-'{endDate}'.");
+            Console.Write("Press any key to continue");
+            Console.ReadKey(true);
+            recentMessage = "\nMessage: Couldn't make the new reservation.\n";
+            break;
+        }
+        string customerName = getString("Please enter the customer name: ");
+        if (!LogicClass.CustomerAlreadyAvailable(customerName))
+        {
+            Console.Write("The user doesn't exist. Please create one to proceed booking. Press any key to continue: ");
+            Console.ReadKey(true);
+            recentMessage = "\nMessage: Booking can't proceed. Please make a new user. \n";
+            break;
+        }
+        LogicClass.addToReservationList((Guid.NewGuid(), startDate, endDate, roomNum, customerName, LogicClass.GenerateRandomString(30)));
+        recentMessage = $"\nMessage: New Reservation for {customerName} Successfully added.\n";
+        break;
+
+    }
+}
+void reservationReportByDateUI()
+{
+    Console.Clear();
+    Console.WriteLine("***  Reservation Management  *** Reservation Report by Date  *** \n ");
+    DateOnly checkingDate = getDate("Please enter the date to check the report: ");
+
+    Console.WriteLine($"\nReservation details for the date {checkingDate} \n\n(P.S. Th end date doesn't count as it's free to book on end date.)\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]\n");
+    int no_of_results = 0;
+    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
+    {
+        if (checkingDate >= startDate && checkingDate < endDate)
+        {
+            no_of_results++;
+            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}]");
+
+        }
+    }
+    if (no_of_results == 0)
+    {
+        Console.WriteLine($"Sorry! No reservations found on given date - '{checkingDate}' . ");
+    }
+    else
+    {
+        Console.WriteLine($"\nTotal {no_of_results} reservations found on given date - '{checkingDate}' . ");
+    }
+    Console.Write("press eny key to return back. ");
+    Console.ReadKey(true);
+    recentMessage = "";
+}
+void availableRoomSearchByDateUI()
+{
+    Console.Clear();
+    Console.WriteLine("***  Reservation Management  *** Available Room Search by Date  *** \n ");
+    DateOnly checkingDate = getDate("Please enter the date to search: ");
+    var availableRoomLists = LogicClass.availableRoomsList(checkingDate);
+    if (availableRoomLists.Count == 0)
+    {
+        Console.WriteLine($"Sorry! No any rooms available to book for the day '{checkingDate}'. ");
+    }
+    else
+    {
+        Console.WriteLine($"\nHere's the list of available rooms to book for the day '{checkingDate}'. \n");
+        Console.WriteLine($"[Room No.] [Room Type]");
+        foreach (var item in availableRoomLists)
+        {
+            Console.WriteLine($"[{item.Item1,8}] [{item.Item2,9}]");
+        }
+        Console.WriteLine($"\n{availableRoomLists.Count} numbers of rooms are available.");
+    }
+    Console.Write("\npress eny key to return back. ");
+    Console.ReadKey(true);
+    recentMessage = "";
+}

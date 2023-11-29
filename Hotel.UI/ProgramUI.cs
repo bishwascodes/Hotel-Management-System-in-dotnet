@@ -1,4 +1,5 @@
 ﻿// CS1400 - Fall 2023 - Bishwas Thapa
+using Hotel.Data;
 using Hotel.Logic;
 
 Console.Clear();
@@ -328,7 +329,16 @@ void addANewRoomUI()
             recentMessage = "\nMessage: Couldn't add new room.\n";
             break;
         }
-        string roomType = getString("Please enter the room type: ");
+        RoomType roomType;
+        while (true)
+        {
+            string input = getString("Please enter the room type: ");
+            if (Enum.TryParse(input, out roomType))
+            {
+                break;
+            }
+        }
+
         LogicClass.addToRoom((roomNum, roomType));
         recentMessage = "\nMessage: New Room Successfully added.\n";
         break;

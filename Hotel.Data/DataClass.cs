@@ -3,24 +3,28 @@
 public class DataClass
 {
 
-    public static List<(int roomNumber, string type)> ReadRoomFile(string filePath)
-    {
-        List<(int roomNumber, string type)> roomList = new List<(int roomNumber, string type)>();
 
-        if (File.Exists(filePath))
+    public static List<(int roomNumber, RoomType type)> ReadRoomFile(string filePath)
+    {
+        List<(int roomNumber, RoomType type)> roomList = new List<(int roomNumber, RoomType type)>();
+
+        try
         {
             string[] lines = File.ReadAllLines(filePath);
             foreach (string line in lines)
             {
                 string[] parts = line.Split(',');
-                string roomType = parts[1];
-                if (parts.Length == 2 && int.TryParse(parts[0], out int roomNumber))
+                if (parts.Length == 2 && int.TryParse(parts[0], out int roomNumber) && Enum.TryParse(parts[1], out RoomType roomType))
                 {
                     roomList.Add((roomNumber, roomType));
                 }
             }
         }
-
+        catch
+        {
+            throw new Exception("Room File Couldn't find.");
+        }
+        // Throw exception here
         return roomList;
     }
 
@@ -64,9 +68,9 @@ public class DataClass
         return customersList;
     }
 
-    public static List<(string roomType, decimal dailyRate)> ReadRoomPricesFile(string filePath)
+    public static List<(RoomType roomType, decimal dailyRate)> ReadRoomPricesFile(string filePath)
     {
-        List<(string roomType, decimal dailyRate)> roomPrices = new List<(string roomType, decimal dailyRate)>();
+        List<(RoomType roomType, decimal dailyRate)> roomPrices = new List<(RoomType roomType, decimal dailyRate)>();
 
         if (File.Exists(filePath))
         {
@@ -74,8 +78,7 @@ public class DataClass
             foreach (string line in lines)
             {
                 string[] parts = line.Split(',');
-                string roomType = parts[0];
-                if (parts.Length == 2 && decimal.TryParse(parts[1], out decimal dailyRate))
+                if (parts.Length == 2 && Enum.TryParse(parts[0], out RoomType roomType) && decimal.TryParse(parts[1], out decimal dailyRate))
                 {
                     roomPrices.Add((roomType, dailyRate));
                 }
@@ -85,7 +88,7 @@ public class DataClass
         return roomPrices;
     }
 
-    public static void UpdateRoomFile(string filePath, List<(int roomNumber, string type)> roomList)
+    public static void UpdateRoomFile(string filePath, List<(int roomNumber, RoomType type)> roomList)
     {
         List<string> lines = new List<string>();
 
@@ -119,7 +122,7 @@ public class DataClass
         File.WriteAllLines(filePath, lines);
     }
 
-    public static void UpdateRoomPricesFile(string filePath, List<(string roomType, decimal dailyRate)> roomPrices)
+    public static void UpdateRoomPricesFile(string filePath, List<(RoomType roomType, decimal dailyRate)> roomPrices)
     {
         List<string> lines = new List<string>();
         foreach (var price in roomPrices)
@@ -134,3 +137,5 @@ public class DataClass
 
 
 }
+
+public enum RoomType { Single, Double, Suite }

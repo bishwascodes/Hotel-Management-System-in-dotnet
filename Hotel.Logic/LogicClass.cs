@@ -9,15 +9,19 @@ public class LogicClass
     public static string customersFile = "..\\Customers.txt";
     public static string roomPricesFile = "..\\RoomPrices.txt";
 
-    public static List<(int roomNumber, string type)> roomList = DataClass.ReadRoomFile(roomsFile);
+    // try catch
+    // Thow exception
+
+    public static List<(int roomNumber, RoomType type)> roomList = DataClass.ReadRoomFile(roomsFile);
+
     public static List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation)> reservationList = DataClass.ReadReservationsFile(reservationsFile);
     public static List<(string customerName, long cardNumber)> customersList = DataClass.ReadCustomersFile(customersFile);
-    public static List<(string roomType, decimal dailyRate)> roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
+    public static List<(RoomType roomType, decimal dailyRate)> roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
 
 
 
     // Adding items to each list 
-    public static void addToRoom((int, string) roomData)
+    public static void addToRoom((int, RoomType) roomData)
     {
         roomList.Add((roomData.Item1, roomData.Item2));
     }
@@ -29,7 +33,7 @@ public class LogicClass
     {
         customersList.Add((customerData.Item1, customerData.Item2));
     }
-    public static void addToRoomPrice((string roomType, decimal dailyRate) roomPriceDatas)
+    public static void addToRoomPrice((RoomType roomType, decimal dailyRate) roomPriceDatas)
     {
         roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate));
     }
@@ -69,10 +73,11 @@ public class LogicClass
 
 
     // Methods 
-    public static List<(int, string)> availableRoomsList(DateOnly checkingDate)
+    public static List<(int, RoomType)> availableRoomsList(DateOnly checkingDate)
     {
         List<(int, string)> rooms = new();
         List<int> numbers = new();
+
         foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
         {
             if (checkingDate >= startDate && checkingDate < endDate)
@@ -80,8 +85,8 @@ public class LogicClass
                 numbers.Add(roomNumber);
             }
         }
-        List<(int, string)> tempRoomList = new();
-        foreach ((int, string) roomItem in roomList)
+        List<(int, RoomType)> tempRoomList = new();
+        foreach ((int, RoomType) roomItem in roomList)
         {
             tempRoomList.Add(roomItem);
         }
@@ -90,7 +95,7 @@ public class LogicClass
             tempRoomList.RemoveAll(item => item.Item1 == number);
         }
         // Check if tempRoomList is empty, and if so, return a new empty list
-        return tempRoomList.Count > 0 ? tempRoomList : new List<(int, string)>();
+        return tempRoomList.Count > 0 ? tempRoomList : new List<(int, RoomType)>();
     }
     public static bool RoomIsAvailable(DateOnly bookingStartDate, DateOnly bookingEndDate, int roomNumber)
     {

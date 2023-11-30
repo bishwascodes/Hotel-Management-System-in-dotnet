@@ -11,12 +11,15 @@ public class LogicClass
 
     // try catch
     // Thow exception
+    public static List<(int roomNumber, RoomType type)> roomList = new();
+    public static List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation)> reservationList = new();
+    public static List<(string customerName, long cardNumber)> customersList = new();
+    public static List<(RoomType roomType, decimal dailyRate)> roomPrices = new();
+    roomList = DataClass.ReadRoomFile(roomsFile);
 
-    public static List<(int roomNumber, RoomType type)> roomList = DataClass.ReadRoomFile(roomsFile);
-
-    public static List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation)> reservationList = DataClass.ReadReservationsFile(reservationsFile);
-    public static List<(string customerName, long cardNumber)> customersList = DataClass.ReadCustomersFile(customersFile);
-    public static List<(RoomType roomType, decimal dailyRate)> roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
+    reservationList = DataClass.ReadReservationsFile(reservationsFile);
+    customersList = DataClass.ReadCustomersFile(customersFile);
+    roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
 
 
 

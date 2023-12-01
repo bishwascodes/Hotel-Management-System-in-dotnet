@@ -249,15 +249,17 @@ void roomManagementUI()
             {
                 bool isTrue = false;
                 int count = 0;
-                DataClass.RoomType roomTypeValue = new(); 
+                DataClass.RoomType roomTypeValue = new();
                 while (!isTrue)
-                {   
+                {
                     string prompt = "Enter the room type that you want to change the price of: ";
-                    if(count>0){
+                    if (count > 0)
+                    {
                         prompt = "Please Enter the valid room type : ";
                     }
                     string input = getString(prompt);
-                    if(int.TryParse(input, out int tempVal)){
+                    if (int.TryParse(input, out int tempVal))
+                    {
                         count++;
                         continue;
                     }
@@ -265,16 +267,11 @@ void roomManagementUI()
                     count++;
                 }
                 decimal currentPrice = LogicClass.getRoomPrice(roomTypeValue);
-                
+
                 Console.WriteLine($"The current price for the room type '{roomTypeValue}' is {currentPrice}");
-                decimal  getPrice = getDecimal(Prompt:"Enter the New Price for your room type. ");
-                for( int i =0; i<LogicClass.roomPrices.Count; i++ ){
-                    var item = LogicClass.roomPrices[i];
-                    if(item.roomType == roomTypeValue){
-                        item.dailyRate = getPrice;
-                        break;
-                    }
-                }
+                decimal getPrice = getDecimal(Prompt: "Enter the New Price for your room type. ");
+                LogicClass.updateTheRoomPrice(roomTypeValue, getPrice);
+
                 recentMessage = "\nMessage: The Price was updated.\n";
                 break;
             }
@@ -375,7 +372,7 @@ void removeACustomerUI()
 void addANewRoomUI()
 {
     Console.Clear();
-    Console.WriteLine("*** Room Management *** Add New Room  *** \n Please enter the room below or Press X to exit.: ");
+    Console.WriteLine("*** Room Management *** Add New Room  *** \n Please enter the room details below: ");
     int roomNum;
     while (true)
     {
@@ -394,6 +391,10 @@ void addANewRoomUI()
         while (true)
         {
             string input = getString("Please enter the room type: ");
+            if (int.TryParse(input, out int tempVar))
+            {
+                continue;
+            }
             if (Enum.TryParse(input, out roomType))
             {
                 break;

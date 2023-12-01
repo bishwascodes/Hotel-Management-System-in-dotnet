@@ -1,5 +1,6 @@
 namespace Hotel.Logic.Tests;
 using Hotel.Logic;
+using Hotel.Data;
 public class UnitTest1
 {
 
@@ -38,36 +39,63 @@ public class UnitTest1
     //     }
 
     // }
+    // [Fact]
+    // public void addingToCustomersPass()
+    // {
+    //     // Given
+    //     string name = ("Test Name");
+    //     long cardNumber = 125385425685;
+    //     LogicClass.customersList.Clear();
+    //     // When
+    //     if (LogicClass.CustomerAlreadyAvailable(name))
+    //     {
+    //         LogicClass.addToCustomers((name, cardNumber));
+    //     }
+    //     // Then
+    //     Assert.True(LogicClass.customersList.Count > 0, "Add the customer");
+    // }
+    // [Fact]
+    // public void addingToCustomersFail()
+    // {
+    //     // Given
+    //     string name = ("Test Name");
+    //     long cardNumber = 125385425685;
+    //     LogicClass.customersList.Clear();
+    //     LogicClass.customersList.Add(("Test Name", 125385425685));
+    //     // When
+    //     if (LogicClass.CustomerAlreadyAvailable(name))
+    //     {
+    //         LogicClass.addToCustomers((name, cardNumber));
+    //     }
+    //     // Then
+    //     Assert.False(LogicClass.customersList.Count > 1, "Can't add the customer");
+    // }
     [Fact]
-    public void addingToCustomersPass()
+    public void returningTheRoomPricePass()
     {
         // Given
-        string name = ("Test Name");
-        long cardNumber = 125385425685;
-        LogicClass.customersList.Clear();
+        DataClass.RoomType type = DataClass.RoomType.Single;
+        LogicClass.roomPrices.Clear();
+        LogicClass.roomPrices.Add((DataClass.RoomType.Single, 200.00m));
+
         // When
-        if (LogicClass.CustomerAlreadyAvailable(name))
-        {
-            LogicClass.addToCustomers((name, cardNumber));
-        }
+        var output = LogicClass.getRoomPrice(type);
         // Then
-        Assert.True(LogicClass.customersList.Count > 0, "Add the customer");
+        Assert.True(output > 0);
     }
     [Fact]
-    public void addingToCustomersFail()
+    public void returningTheRoomPriceFail()
     {
         // Given
-        string name = ("Test Name");
-        long cardNumber = 125385425685;
-        LogicClass.customersList.Clear();
-        LogicClass.customersList.Add(("Test Name", 125385425685));
+        DataClass.RoomType type = DataClass.RoomType.Single;
+        LogicClass.roomPrices.Clear();
+        LogicClass.roomPrices.Add((DataClass.RoomType.Double, 200.00m));
+
         // When
-        if (LogicClass.CustomerAlreadyAvailable(name))
-        {
-            LogicClass.addToCustomers((name, cardNumber));
-        }
+        var output = LogicClass.getRoomPrice(type);
         // Then
-        Assert.False(LogicClass.customersList.Count > 1, "Can't add the customer");
+        Assert.Equal(0m,output);
+        
     }
 
 }

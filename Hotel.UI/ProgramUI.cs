@@ -1,8 +1,19 @@
 ﻿// CS1400 - Fall 2023 - Bishwas Thapa
-using Hotel.Data;
-using Hotel.Logic;
 
-Console.Clear();
+using Hotel.Logic;
+// Only for the Enum RoomType
+using Hotel.Data;
+
+//Console.Clear();
+try
+{
+    LogicClass.GetDataFromFiles();
+}
+catch (Exception e)
+{
+    Console.WriteLine(e.Message);
+    return;
+}
 int userChoice = 0;
 string recentMessage = "";
 do
@@ -52,31 +63,7 @@ do
     }
     else if (userChoice == 2)
     {
-        while (true)
-        {
-            Console.Clear();
-            Console.WriteLine($"************ Room Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Room \n 2. Search for Available Rooms \n 3.  Cost Tracking Report \n 4. Save changes and return to main menu ");
-            userChoice = getInt(1, 4, "Choose any number from 1 to 4: ");
-            while (true)
-            {
-                if (userChoice == 1)
-                {
-                    addANewRoomUI();
-                    break;
-                }
-                else if (userChoice == 4)
-                {
-
-                    break;
-                }
-            }
-            if (userChoice == 4)
-            {
-                LogicClass.saveAllToFiles();
-                recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
-                break;
-            }
-        }
+        roomManagementUI();
     }
     else if (userChoice == 3)
     {
@@ -195,6 +182,19 @@ int getInt(int min = int.MinValue, int max = int.MaxValue, string Prompt = "")
 
     return returnValue;
 }
+decimal getDecimal(decimal min = decimal.MinValue, decimal max = decimal.MaxValue, string Prompt = "")
+{
+    Console.Write(Prompt);
+    bool isValid = false;
+    decimal returnValue = 0;
+    while (isValid == false || returnValue < min || returnValue > max)
+    {
+
+        isValid = decimal.TryParse(Console.ReadLine(), out returnValue);
+    }
+
+    return returnValue;
+}
 long getLong(long min = long.MinValue, long max = long.MaxValue, string Prompt = "")
 {
     Console.Write(Prompt);
@@ -231,6 +231,67 @@ DateOnly getDate(string prompt = "")
 }
 
 // UI Components
+void roomManagementUI()
+{
+    while (true)
+    {
+        Console.Clear();
+        Console.WriteLine($"************ Room Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Room \n 2. Change Room Pricing \n 3.  Cost Tracking Report \n 4. Save changes and return to main menu ");
+        userChoice = getInt(1, 4, "Choose any number from 1 to 4: ");
+        while (true)
+        {
+            if (userChoice == 1)
+            {
+                addANewRoomUI();
+                break;
+            }
+            else if (userChoice == 2)
+            {
+                bool isTrue = false;
+                int count = 0;
+                DataClass.RoomType roomTypeValue = new(); 
+                while (!isTrue)
+                {   
+                    string prompt = "Enter the room type that you want to change the price of: ";
+                    if(count>0){
+                        prompt = "Please Enter the valid room type : ";
+                    }
+                    string input = getString(prompt);
+                    if(int.TryParse(input, out int tempVal)){
+                        count++;
+                        continue;
+                    }
+                    isTrue = Enum.TryParse(input, out roomTypeValue);
+                    count++;
+                }
+                decimal currentPrice = LogicClass.getRoomPrice(roomTypeValue);
+                
+                Console.WriteLine($"The current price for the room type '{roomTypeValue}' is {currentPrice}");
+                decimal  getPrice = getDecimal(Prompt:"Enter the New Price for your room type. ");
+                for( int i =0; i<LogicClass.roomPrices.Count; i++ ){
+                    var item = LogicClass.roomPrices[i];
+                    if(item.roomType == roomTypeValue){
+                        item.dailyRate = getPrice;
+                        break;
+                    }
+                }
+                recentMessage = "\nMessage: The Price was updated.\n";
+                break;
+            }
+            else if (userChoice == 4)
+            {
+
+                break;
+            }
+        }
+        if (userChoice == 4)
+        {
+            LogicClass.saveAllToFiles();
+            recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
+            break;
+        }
+    }
+}
 void addNewCustomerUI()
 {
     Console.Clear();
@@ -329,7 +390,7 @@ void addANewRoomUI()
             recentMessage = "\nMessage: Couldn't add new room.\n";
             break;
         }
-        RoomType roomType;
+        DataClass.RoomType roomType;
         while (true)
         {
             string input = getString("Please enter the room type: ");

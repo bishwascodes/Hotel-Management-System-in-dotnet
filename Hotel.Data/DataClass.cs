@@ -2,8 +2,10 @@
 
 public class DataClass
 {
+    public enum RoomType { Single, Double, Suite }
 
 
+    // best: Data operates in strings (input/output are all strings)
     public static List<(int roomNumber, RoomType type)> ReadRoomFile(string filePath)
     {
         List<(int roomNumber, RoomType type)> roomList = new List<(int roomNumber, RoomType type)>();
@@ -22,8 +24,9 @@ public class DataClass
         }
         catch
         {
-            throw new Exception("Room File Couldn't find.");
+            throw new FileNotFoundException("Room File Couldn't find.\n");
         }
+
         // Throw exception here
         return roomList;
     }
@@ -32,7 +35,7 @@ public class DataClass
     {
         List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation)> reservationList = new List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation)>();
 
-        if (File.Exists(filePath))
+        try
         {
             string[] lines = File.ReadAllLines(filePath);
             foreach (string line in lines)
@@ -44,6 +47,10 @@ public class DataClass
                 }
             }
         }
+        catch
+        {
+            throw new FileNotFoundException("Reservation File Couldn't find.\n");
+        }
 
         return reservationList;
     }
@@ -52,7 +59,7 @@ public class DataClass
     {
         List<(string customerName, long cardNumber)> customersList = new List<(string customerName, long cardNumber)>();
 
-        if (File.Exists(filePath))
+        try
         {
             string[] lines = File.ReadAllLines(filePath);
             foreach (string line in lines)
@@ -64,6 +71,10 @@ public class DataClass
                 }
             }
         }
+        catch
+        {
+            throw new FileNotFoundException("Customer File Couldn't find.\n");
+        }
 
         return customersList;
     }
@@ -72,7 +83,7 @@ public class DataClass
     {
         List<(RoomType roomType, decimal dailyRate)> roomPrices = new List<(RoomType roomType, decimal dailyRate)>();
 
-        if (File.Exists(filePath))
+        try
         {
             string[] lines = File.ReadAllLines(filePath);
             foreach (string line in lines)
@@ -83,6 +94,10 @@ public class DataClass
                     roomPrices.Add((roomType, dailyRate));
                 }
             }
+        }
+        catch
+        {
+            throw new FileNotFoundException("Room Price File Couldn't find.\n");
         }
 
         return roomPrices;
@@ -138,4 +153,4 @@ public class DataClass
 
 }
 
-public enum RoomType { Single, Double, Suite }
+

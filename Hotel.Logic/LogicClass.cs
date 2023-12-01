@@ -11,20 +11,61 @@ public class LogicClass
 
     // try catch
     // Thow exception
-    public static List<(int roomNumber, RoomType type)> roomList = new();
+    public static List<(int roomNumber, DataClass.RoomType type)> roomList = new();
     public static List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation)> reservationList = new();
     public static List<(string customerName, long cardNumber)> customersList = new();
-    public static List<(RoomType roomType, decimal dailyRate)> roomPrices = new();
-    roomList = DataClass.ReadRoomFile(roomsFile);
+    public static List<(DataClass.RoomType roomType, decimal dailyRate)> roomPrices = new();
 
-    reservationList = DataClass.ReadReservationsFile(reservationsFile);
-    customersList = DataClass.ReadCustomersFile(customersFile);
-    roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
+    public static void GetDataFromFiles()
+    {
+        var errorMessages = "";
+        try
+        {
+            roomList = DataClass.ReadRoomFile(roomsFile);
+        }
+        catch (FileNotFoundException e)
+        {
+            errorMessages += e.Message;
+        }
 
+        try
+        {
+            reservationList = DataClass.ReadReservationsFile(reservationsFile);
+        }
+        catch (FileNotFoundException e)
+        {
+            errorMessages += e.Message;
+        }
+
+        try
+        {
+            customersList = DataClass.ReadCustomersFile(customersFile);
+        }
+        catch (FileNotFoundException e)
+        {
+            errorMessages += e.Message;
+        }
+
+        try
+        {
+            roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
+        }
+        catch (FileNotFoundException e)
+        {
+            errorMessages += e.Message;
+        }
+        if (errorMessages.Length > 0)
+        {
+            throw new Exception(errorMessages);
+        }
+
+
+
+    }
 
 
     // Adding items to each list 
-    public static void addToRoom((int, RoomType) roomData)
+    public static void addToRoom((int, DataClass.RoomType) roomData)
     {
         roomList.Add((roomData.Item1, roomData.Item2));
     }
@@ -36,7 +77,7 @@ public class LogicClass
     {
         customersList.Add((customerData.Item1, customerData.Item2));
     }
-    public static void addToRoomPrice((RoomType roomType, decimal dailyRate) roomPriceDatas)
+    public static void addToRoomPrice((DataClass.RoomType roomType, decimal dailyRate) roomPriceDatas)
     {
         roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate));
     }
@@ -76,7 +117,7 @@ public class LogicClass
 
 
     // Methods 
-    public static List<(int, RoomType)> availableRoomsList(DateOnly checkingDate)
+    public static List<(int, DataClass.RoomType)> availableRoomsList(DateOnly checkingDate)
     {
         List<(int, string)> rooms = new();
         List<int> numbers = new();
@@ -88,8 +129,8 @@ public class LogicClass
                 numbers.Add(roomNumber);
             }
         }
-        List<(int, RoomType)> tempRoomList = new();
-        foreach ((int, RoomType) roomItem in roomList)
+        List<(int, DataClass.RoomType)> tempRoomList = new();
+        foreach ((int, DataClass.RoomType) roomItem in roomList)
         {
             tempRoomList.Add(roomItem);
         }
@@ -98,7 +139,7 @@ public class LogicClass
             tempRoomList.RemoveAll(item => item.Item1 == number);
         }
         // Check if tempRoomList is empty, and if so, return a new empty list
-        return tempRoomList.Count > 0 ? tempRoomList : new List<(int, RoomType)>();
+        return tempRoomList.Count > 0 ? tempRoomList : new List<(int, DataClass.RoomType)>();
     }
     public static bool RoomIsAvailable(DateOnly bookingStartDate, DateOnly bookingEndDate, int roomNumber)
     {
@@ -155,6 +196,20 @@ public class LogicClass
 
         }
         return isAvailable;
+    }
+
+    public static decimal getRoomPrice(DataClass.RoomType type)
+    {
+        decimal currentPrice = 0;
+        foreach ((DataClass.RoomType roomType, decimal dailyRate) item in roomPrices)
+        {
+            if (item.roomType == type)
+            {
+                currentPrice = item.dailyRate;
+                break;
+            }
+        }
+        return currentPrice;
     }
     public static string GenerateRandomString(int length)
     {

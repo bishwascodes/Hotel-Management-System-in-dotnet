@@ -1,27 +1,53 @@
 ﻿namespace Hotel.Logic;
+
+using System.Runtime.CompilerServices;
 using Hotel.Data;
 
 public class LogicClass
 {
+    // To load the files from any directory
+    public static string FindFile(string fileName)
+    {
+        var directory = new DirectoryInfo(Directory.GetCurrentDirectory());
+        while (true)
+        {
+            var testPath = Path.Combine(directory.FullName, fileName);
+            if (File.Exists(testPath))
+            {
+                return testPath;
+            }
+            if (directory.FullName == directory.Root.FullName)
+            {
+                return testPath;
+            }
+            directory = directory.Parent;
+        }
+    }
     // File Paths
-    public static string roomsFile = "..\\Rooms.txt";
-    public static string reservationsFile = "..\\Reservations.txt";
-    public static string customersFile = "..\\Customers.txt";
-    public static string roomPricesFile = "..\\RoomPrices.txt";
+    public static string roomsFile = "Rooms.txt";
+    public static string reservationsFile = "Reservations.txt";
+    public static string customersFile = "Customers.txt";
+    public static string roomPricesFile = "RoomPrices.txt";
+    public static string couponsFile = "Coupons.txt";
+    public static string couponRedemptionFile = "CouponRedemption.txt";
+    public static string refundsFile = "Refunds.txt";
 
-    // try catch
-    // Thow exception
+    // Init the lists
     public static List<(int roomNumber, DataClass.RoomType type)> roomList = new();
-    public static List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation)> reservationList = new();
-    public static List<(string customerName, long cardNumber)> customersList = new();
-    public static List<(DataClass.RoomType roomType, decimal dailyRate)> roomPrices = new();
+    public static List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid)> reservationList = new();
+    public static List<(string customerName, long cardNumber, bool isFrequentTraveler)> customersList = new();
+    public static List<(DataClass.RoomType roomType, decimal dailyRate, decimal cleaningCost)> roomPrices = new();
+    public static List<(Guid reservationNumber, string couponCode, double discountPercentage)> couponRedemptionsList = new();
+    public static List<(Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid, DateOnly refundDate)> refundsList = new();
+    public static Dictionary<string, double> couponsList = new Dictionary<string, double>();
 
+    // Actual Fetching of the data
     public static void GetDataFromFiles()
     {
         var errorMessages = "";
         try
         {
-            roomList = DataClass.ReadRoomFile(roomsFile);
+            roomList = DataClass.ReadRoomFile(FindFile(roomsFile));
         }
         catch (FileNotFoundException e)
         {
@@ -30,7 +56,7 @@ public class LogicClass
 
         try
         {
-            reservationList = DataClass.ReadReservationsFile(reservationsFile);
+            reservationList = DataClass.ReadReservationsFile(FindFile(reservationsFile));
         }
         catch (FileNotFoundException e)
         {
@@ -39,7 +65,7 @@ public class LogicClass
 
         try
         {
-            customersList = DataClass.ReadCustomersFile(customersFile);
+            customersList = DataClass.ReadCustomersFile(FindFile(customersFile));
         }
         catch (FileNotFoundException e)
         {
@@ -48,12 +74,40 @@ public class LogicClass
 
         try
         {
-            roomPrices = DataClass.ReadRoomPricesFile(roomPricesFile);
+            roomPrices = DataClass.ReadRoomPricesFile(FindFile(roomPricesFile));
         }
         catch (FileNotFoundException e)
         {
             errorMessages += e.Message;
         }
+
+        try
+        {
+            couponRedemptionsList = DataClass.ReadCouponRedemptionsFile(FindFile(couponRedemptionFile));
+        }
+        catch (FileNotFoundException e)
+        {
+            errorMessages += e.Message;
+        }
+
+        try
+        {
+            refundsList = DataClass.ReadRefundsFile(FindFile(refundsFile));
+        }
+        catch (FileNotFoundException e)
+        {
+            errorMessages += e.Message;
+        }
+
+        try
+        {
+            couponsList = DataClass.ReadCouponsFile(FindFile(couponsFile));
+        }
+        catch (FileNotFoundException e)
+        {
+            errorMessages += e.Message;
+        }
+
         if (errorMessages.Length > 0)
         {
             throw new Exception(errorMessages);
@@ -69,17 +123,17 @@ public class LogicClass
     {
         roomList.Add((roomData.Item1, roomData.Item2));
     }
-    public static void addToReservationList((Guid, DateOnly, DateOnly, int, string, string) reservationData)
+    public static void addToReservationList((Guid, DateOnly, DateOnly, int, string, string, bool, decimal) reservationData)
     {
-        reservationList.Add((reservationData.Item1, reservationData.Item2, reservationData.Item3, reservationData.Item4, reservationData.Item5, reservationData.Item6));
+        reservationList.Add((reservationData.Item1, reservationData.Item2, reservationData.Item3, reservationData.Item4, reservationData.Item5, reservationData.Item6, reservationData.Item7, reservationData.Item8));
     }
-    public static void addToCustomers((string, long) customerData)
+    public static void addToCustomers((string, long, bool) customerData)
     {
-        customersList.Add((customerData.Item1, customerData.Item2));
+        customersList.Add((customerData.Item1, customerData.Item2, customerData.Item3));
     }
-    public static void addToRoomPrice((DataClass.RoomType roomType, decimal dailyRate) roomPriceDatas)
+    public static void addToRoomPrice((DataClass.RoomType roomType, decimal dailyRate, decimal cleaningCost) roomPriceDatas)
     {
-        roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate));
+        roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate, roomPriceDatas.cleaningCost));
     }
     // Removing items from each list 
     // public static void addToRoom((int, string) roomData)
@@ -103,10 +157,10 @@ public class LogicClass
 
     public static void saveAllToFiles()
     {
-        DataClass.UpdateCustomersFile(customersFile, customersList);
-        DataClass.UpdateRoomFile(roomsFile, roomList);
-        DataClass.UpdateReservationsFile(reservationsFile, reservationList);
-        DataClass.UpdateRoomPricesFile(roomPricesFile, roomPrices);
+        DataClass.UpdateCustomersFile(FindFile(customersFile), customersList);
+        DataClass.UpdateRoomFile(FindFile(roomsFile), roomList);
+        DataClass.UpdateReservationsFile(FindFile(reservationsFile), reservationList);
+        DataClass.UpdateRoomPricesFile(FindFile(roomPricesFile), roomPrices);
     }
 
 
@@ -122,7 +176,7 @@ public class LogicClass
         List<(int, string)> rooms = new();
         List<int> numbers = new();
 
-        foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
+        foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
         {
             if (checkingDate >= startDate && checkingDate < endDate)
             {
@@ -201,7 +255,7 @@ public class LogicClass
     public static decimal getRoomPrice(DataClass.RoomType type)
     {
         decimal currentPrice = 0;
-        foreach ((DataClass.RoomType roomType, decimal dailyRate) item in roomPrices)
+        foreach ((DataClass.RoomType roomType, decimal dailyRate, decimal cleaningCost) item in roomPrices)
         {
             if (item.roomType == type)
             {
@@ -211,17 +265,35 @@ public class LogicClass
         }
         return currentPrice;
     }
-    public static void updateTheRoomPrice(DataClass.RoomType roomTypeValue, decimal getPrice)
+    public static decimal getRoomCleaningPrice(DataClass.RoomType type)
+    {
+        decimal cleaningPrice = 0;
+        foreach ((DataClass.RoomType roomType, decimal dailyRate, decimal cleaningCost) item in roomPrices)
+        {
+            if (item.roomType == type)
+            {
+                cleaningPrice = item.cleaningCost;
+                break;
+            }
+        }
+        return cleaningPrice;
+    }
+    public static void updateTheRoomPrice(DataClass.RoomType roomTypeValue, decimal getPrice, decimal cleaningCost)
     {
         for (int i = 0; i < roomPrices.Count; i++)
         {
             var item = LogicClass.roomPrices[i];
             if (item.roomType == roomTypeValue)
             {
-                LogicClass.roomPrices[i] = (item.roomType, getPrice);
+                LogicClass.roomPrices[i] = (item.roomType, getPrice, cleaningCost);
                 break;
             }
         }
+    }
+
+    public static bool isValidCoupon(string couponCode)
+    {
+        return couponsList.ContainsKey(couponCode);
     }
     public static string GenerateRandomString(int length)
     {

@@ -99,10 +99,10 @@ do
                 else if (userChoice == 2)
                 {
                     Console.Clear();
-                    Console.WriteLine("***  Reservation Management  *** Reservation Details  *** \n [*********Reservation Number*********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]");
-                    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
+                    Console.WriteLine("***  Reservation Management  *** Reservation Details  *** \n [*********Reservation Number*********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****] [Has Coupon] [Paid Amount]");
+                    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
                     {
-                        Console.WriteLine($"[ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}]");
+                        Console.WriteLine($"[ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
                     }
                     Console.Write("press eny key to return back. ");
                     Console.ReadKey(true);
@@ -121,15 +121,15 @@ do
                         recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
                         break;
                     }
-                    Console.WriteLine($"\nReservation details for {customer} (Future and Current Reservation Only) \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]\n");
+                    Console.WriteLine($"\nReservation details for {customer} (Future and Current Reservation Only) \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****] [Has Coupon] [Paid Amount]\n");
                     int no_of_results = 0;
                     var dateNow = DateOnly.FromDateTime(DateTime.Now);
-                    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
+                    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
                     {
                         if (customerName.ToLower().Trim() == customer.ToLower().Trim() && dateNow < endDate)
                         {
                             no_of_results++;
-                            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}]");
+                            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
 
                         }
                     }
@@ -287,8 +287,12 @@ void roomManagementUI()
                 decimal currentPrice = LogicClass.getRoomPrice(roomTypeValue);
 
                 Console.WriteLine($"The current price for the room type '{roomTypeValue}' is {currentPrice}");
-                decimal getPrice = getDecimal(Prompt: "Enter the New Price for your room type. ");
-                LogicClass.updateTheRoomPrice(roomTypeValue, getPrice);
+                decimal getRoomPrice = getDecimal(Prompt: "Enter the New Price for your room type. ");
+
+                decimal currrentCleaningPrice = LogicClass.getRoomCleaningPrice(roomTypeValue);
+                Console.WriteLine($"The current cleaning price for the room type '{roomTypeValue}' is {currrentCleaningPrice}");
+                decimal getCleaningPrice = getDecimal(Prompt: "Enter the New Cleaning Price for your room type. ");
+                LogicClass.updateTheRoomPrice(roomTypeValue, getRoomPrice, getCleaningPrice);
 
                 recentMessage = "\nMessage: The Price was updated.\n";
                 break;
@@ -333,7 +337,7 @@ void addNewCustomerUI()
     if (!LogicClass.CustomerAlreadyAvailable(name) && name != "X" && name != "x")
     {
         long cardNumber = getLong(Prompt: "Please, Enter the card Number: ");
-        LogicClass.addToCustomers((name, cardNumber));
+        LogicClass.addToCustomers((name, cardNumber, false));
     }
     recentMessage = "\nMessage: New customer Successfully Added\n";
 }
@@ -342,10 +346,10 @@ void addNewCustomerUI()
 void customersDetailsUI()
 {
     Console.Clear();
-    Console.WriteLine("*** Customer Management *** Customer Details  *** \n[*************Name**************] [**********Card Number*********]");
-    foreach ((string name, long id) in LogicClass.customersList)
+    Console.WriteLine("*** Customer Management *** Customer Details  *** \n[*************Name**************] [**********Card Number*********] [Is Frequent Traveler?]");
+    foreach ((string name, long id, bool isFreqTraveler) in LogicClass.customersList)
     {
-        Console.WriteLine($"[ {name,-30}] [{id,30}]");
+        Console.WriteLine($"[ {name,-30}] [{id,30}] [{isFreqTraveler,21}]");
     }
     Console.Write("press eny key to return back. ");
     Console.ReadKey(true);
@@ -390,15 +394,15 @@ void removeACustomerUI()
 void priorReservationForCustomerUI(string customer)
 {
 
-    Console.WriteLine($"\nReservation details for {customer} (Past Reservation Only) \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]\n");
+    Console.WriteLine($"\nReservation details for {customer} (Past Reservation Only) \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****] [Has Coupon] [Paid Amount]\n");
     int no_of_results = 0;
     var dateNow = DateOnly.FromDateTime(DateTime.Now);
-    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
+    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
     {
         if (customerName.ToLower().Trim() == customer.ToLower().Trim() && dateNow > endDate)
         {
             no_of_results++;
-            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}]");
+            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
 
         }
     }
@@ -494,7 +498,37 @@ void addNewReservationUI()
             recentMessage = "\nMessage: Booking can't proceed. Please make a new user. \n";
             break;
         }
-        LogicClass.addToReservationList((Guid.NewGuid(), startDate, endDate, roomNum, customerName, LogicClass.GenerateRandomString(30)));
+
+
+        bool hasCoupon;
+        decimal amountPaid = 200;
+        int count = 0;
+        while (true)
+        {
+            string prompt = "Please enter Coupon Code if You have or enter X to skip: ";
+            if (count > 0)
+            {
+                prompt = "The coupon was invalid. Please try again or enter X to skip: ";
+            }
+            string couponCode = getString(prompt);
+            couponCode = couponCode.Trim().ToUpper();
+            if (couponCode == "X")
+            {
+                hasCoupon = false;
+                break;
+            }
+            else
+            {
+                if (LogicClass.isValidCoupon(couponCode))
+                {
+                    hasCoupon = true;
+                    break;
+                }
+                count++;
+            }
+        }
+
+        LogicClass.addToReservationList((Guid.NewGuid(), startDate, endDate, roomNum, customerName, LogicClass.GenerateRandomString(30), hasCoupon, amountPaid));
         recentMessage = $"\nMessage: New Reservation for {customerName} Successfully added.\n";
         break;
 
@@ -506,14 +540,14 @@ void reservationReportByDateUI()
     Console.WriteLine("***  Reservation Management  *** Reservation Report by Date  *** \n ");
     DateOnly checkingDate = getDate("Please enter the date to check the report: ");
 
-    Console.WriteLine($"\nReservation details for the date {checkingDate} \n\n(P.S. Th end date doesn't count as it's free to book on end date.)\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]\n");
+    Console.WriteLine($"\nReservation details for the date {checkingDate} \n\n(P.S. Th end date doesn't count as it's free to book on end date.)\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****] \n");
     int no_of_results = 0;
-    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
+    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
     {
         if (checkingDate >= startDate && checkingDate < endDate)
         {
             no_of_results++;
-            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}]");
+            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
 
         }
     }

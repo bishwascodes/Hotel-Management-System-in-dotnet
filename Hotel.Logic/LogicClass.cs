@@ -2,6 +2,7 @@
 
 using System.Runtime.CompilerServices;
 using Hotel.Data;
+using Microsoft.VisualBasic;
 
 public class LogicClass
 {
@@ -135,25 +136,27 @@ public class LogicClass
     {
         roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate, roomPriceDatas.cleaningCost));
     }
+    public static void addToReFundsList((Guid, DateOnly, DateOnly, int, string, string, bool, decimal, DateOnly) refundsData)
+    {
+        refundsList.Add((refundsData.Item1, refundsData.Item2, refundsData.Item3, refundsData.Item4, refundsData.Item5, refundsData.Item6, refundsData.Item7, refundsData.Item8, refundsData.Item9));
+    }
+
+
     // Removing items from each list 
-    // public static void addToRoom((int, string) roomData)
-    // {
-    //     roomList.Add((roomData.Item1, roomData.Item2));
-    // }
-    // public static void addToReservationList((Guid, DateOnly, int, string, string) reservationData)
-    // {
-    //     reservationList.Add((reservationData.Item1, reservationData.Item2, reservationData.Item3, reservationData.Item4, reservationData.Item5));
-    // }
+
     public static void removeFromCustomers(string nameToRemove)
     {
 
         customersList.RemoveAll(customer => customer.Item1.Equals(nameToRemove, StringComparison.OrdinalIgnoreCase));
 
     }
-    // public static void addToRoomPrice((string roomType, decimal dailyRate) roomPriceDatas)
-    // {
-    //     roomPrices.Add((roomPriceDatas.roomType, roomPriceDatas.dailyRate));
-    // }
+
+    public static void removeFromReservation(Guid ourReservationNumber)
+    {
+        reservationList.RemoveAll(reservation => Guid.Equals(reservation.Item1, ourReservationNumber));
+    }
+
+    // Updating the changed files
 
     public static void saveAllToFiles()
     {
@@ -161,6 +164,7 @@ public class LogicClass
         DataClass.UpdateRoomFile(FindFile(roomsFile), roomList);
         DataClass.UpdateReservationsFile(FindFile(reservationsFile), reservationList);
         DataClass.UpdateRoomPricesFile(FindFile(roomPricesFile), roomPrices);
+        DataClass.UpdateRefundsFile(FindFile(refundsFile), refundsList);
     }
 
 
@@ -282,10 +286,10 @@ public class LogicClass
     {
         for (int i = 0; i < roomPrices.Count; i++)
         {
-            var item = LogicClass.roomPrices[i];
+            var item = roomPrices[i];
             if (item.roomType == roomTypeValue)
             {
-                LogicClass.roomPrices[i] = (item.roomType, getPrice, cleaningCost);
+                roomPrices[i] = (item.roomType, getPrice, cleaningCost);
                 break;
             }
         }
@@ -310,16 +314,42 @@ public class LogicClass
         }
         return isFreqTraveler;
     }
+    public static bool isValidReservation(Guid ourReservationNumber)
+    {
+
+        for (int i = 0; i < reservationList.Count; i++)
+        {
+            var item = reservationList[i];
+            if (item.reservationNumber == ourReservationNumber)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public static void addAsFrequentTraveller(string name)
     {
- 
+
         for (int i = 0; i < customersList.Count; i++)
         {
             if (customersList[i].customerName.ToLower().Trim() == name.ToLower())
             {
-                customersList[i] = (customersList[i].customerName,customersList[i].cardNumber, true);
+                customersList[i] = (customersList[i].customerName, customersList[i].cardNumber, true);
             }
         }
+    }
+    public static (Guid reservationNumber, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) getReservationDetails(Guid ourReservationNumber)
+    {
+        for (int i = 0; i < reservationList.Count; i++)
+        {
+            var item = reservationList[i];
+            if (item.reservationNumber == ourReservationNumber)
+            {
+                return item;
+            }
+        }
+        // If reservation Number not found, we'll return the very first reservation
+        return reservationList[0];
     }
 
 

@@ -138,6 +138,10 @@ public class DataClass
                 {
                     refunds.Add((reservationNumber, startDate, endDate, roomNumber, parts[4], parts[5], hasCoupon, amountPaid, refundDate));
                 }
+                else
+                {
+                    Console.WriteLine("Can't parse here");
+                }
             }
         }
         catch
@@ -231,7 +235,7 @@ public class DataClass
         List<string> lines = new List<string>();
         foreach (var item in refunds)
         {
-            string line = $"{item.reservationNumber},{item.startDate},{item.endDate},{item.customerName},{item.paymentConfirmation},{item.hasCoupon},{item.amountPaid},{item.refundDate}";
+            string line = $"{item.reservationNumber},{item.startDate},{item.endDate},{item.roomNumber},{item.customerName},{item.paymentConfirmation},{item.hasCoupon},{item.amountPaid},{item.refundDate}";
             lines.Add(line);
         }
         File.WriteAllLines(filePath, lines);

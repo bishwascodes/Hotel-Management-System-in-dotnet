@@ -112,8 +112,8 @@ do
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"************ Reservation Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Reservation \n 2. View All Reservations \n 3. Reservation Report by Customer Name(Future) \n 4. Reservation Report by Date \n 5. Available Room Search by Date \n 6. Save changes and return to main menu ");
-            userChoice = getInt(1, 6, "Choose any number from 1 to 6: ");
+            Console.WriteLine($"************ Reservation Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Reservation \n 2. View All Reservations \n 3. Reservation Report by Customer Name(Future) \n 4. Reservation Report by Date \n 5. Available Room Search by Date \n 6. Refund a Reservation \n 7. Save changes and return to main menu ");
+            userChoice = getInt(1, 7, "Choose any number from 1 to 7: ");
             while (true)
             {
                 if (userChoice == 1)
@@ -183,12 +183,44 @@ do
                 }
                 else if (userChoice == 6)
                 {
-                    LogicClass.saveAllToFiles();
-                    recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
+                    Console.Clear();
+                    Console.WriteLine("***  Reservation Management  *** Refund a Reservation*** \n ");
+                    string reservationNo = getString("Please Copy and Paste the Reservation Number(GUID) here(right click to paste): ").Trim();
+                    Guid reservationNoGuid;
+                    bool isValid = Guid.TryParse(reservationNo, out reservationNoGuid);
+                    if (!isValid || !LogicClass.isValidReservation(reservationNoGuid))
+                    {
+                        Console.WriteLine($"The reservation with that Reservation Number doesn't exist. Please try copying and pasting again. ");
+                        Console.Write("Press any key to continue");
+                        Console.ReadKey(true);
+                        Console.WriteLine();
+                        recentMessage = "\nMessage: Couldn't Find the reservation for the refund\n";
+                        break;
+                    }
+                    var reservationDetails = LogicClass.getReservationDetails(reservationNoGuid);
+                    Console.WriteLine($"Warning! You're about to refund ${reservationDetails.amountPaid} for {reservationDetails.customerName}. \nHere are the details about the refund: \nRoom Number -> {reservationDetails.roomNumber}, Start Date -> {reservationDetails.startDate}, End Date -> {reservationDetails.endDate}");
+                    string typedInput = getString("\nType 'X' to cancel or any other key to Proceed: ");
+                    if (typedInput.Trim().ToLower() == "x")
+                    {
+                        recentMessage = "\nMessage: Refund Request Cancelled!\n";
+                        break;
+                    }
+                    LogicClass.addToReFundsList((reservationDetails.Item1, reservationDetails.Item2, reservationDetails.Item3, reservationDetails.Item4, reservationDetails.Item5, reservationDetails.Item6, reservationDetails.Item7, reservationDetails.Item8, DateOnly.FromDateTime(DateTime.Now)));
+                    LogicClass.removeFromReservation(reservationNoGuid);
+
+
+                    Console.Write($"Refund Successful for {reservationDetails.customerName}. Press any key to continue: ");
+                    Console.ReadKey(true);
+                    Console.WriteLine();
+                    recentMessage = "\nMessage: Refund Request executed Successfully. \n";
+                    break;
+                }
+                else if (userChoice == 7)
+                {
                     break;
                 }
             }
-            if (userChoice == 6)
+            if (userChoice == 7)
             {
                 LogicClass.saveAllToFiles();
                 recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";

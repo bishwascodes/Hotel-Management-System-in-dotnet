@@ -26,8 +26,8 @@ do
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"************ Customer Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Customer \n 2. View Customer Details \n 3. Delete Customer \n 4. Prior Reservation for Customer\n 5. Save changes and exit to main menu ");
-            userChoice = getInt(1, 5, "Choose any number from 1 to 5: ");
+            Console.WriteLine($"************ Customer Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Customer \n 2. View Customer Details \n 3. Delete Customer \n 4. Prior Reservation for Customer\n 5. Make Frequent Traveller \n 6. Save changes and exit to main menu ");
+            userChoice = getInt(1, 6, "Choose any number from 1 to 6: ");
             while (true)
             {
                 if (userChoice == 1)
@@ -65,10 +65,35 @@ do
 
                 else if (userChoice == 5)
                 {
+                    Console.Clear();
+                    Console.WriteLine("***  Customer Management  *** Make Frequent Traveller *** \n ");
+                    string customer = getString("Please enter the name of customer: ");
+                    if (!LogicClass.CustomerAlreadyAvailable(customer))
+                    {
+                        Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
+                        Console.ReadKey(true);
+                        recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
+                        break;
+                    }
+                    if (LogicClass.isFrequentTraveler(customer))
+                    {
+                        Console.Write($"The user {customer} is already a Frequent Traveller. Press any key to continue: ");
+                        Console.ReadKey(true);
+                        recentMessage = $"\nMessage: The customer with the name {customer} is already a Frequent traveller. \n";
+                        break;
+                    }
+                    LogicClass.addAsFrequentTraveller(customer);
+                    Console.Write($"Success! The customer {customer} is now a Frequent traveller. Press any key to continue: ");
+                    Console.ReadKey(true);
+                    recentMessage = $"\nMessage:The user {customer} successfully added as a Frequent Traveller. \n";
+                    break;
+                }
+                else if (userChoice == 6)
+                {
                     break;
                 }
             }
-            if (userChoice == 5)
+            if (userChoice == 6)
             {
                 LogicClass.saveAllToFiles();
                 recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";

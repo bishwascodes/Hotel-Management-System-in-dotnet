@@ -295,6 +295,36 @@ public class LogicClass
     {
         return couponsList.ContainsKey(couponCode);
     }
+    public static bool isFrequentTraveler(string name)
+    {
+        var customerFileData = customersList;
+        bool isFreqTraveler = false;
+        foreach (var data in customerFileData)
+        {
+            if (data.customerName.ToLower().Trim() == name.ToLower())
+            {
+                isFreqTraveler = data.isFrequentTraveler;
+                break;
+            }
+
+        }
+        return isFreqTraveler;
+    }
+    public static void addAsFrequentTraveller(string name)
+    {
+ 
+        for (int i = 0; i < customersList.Count; i++)
+        {
+            if (customersList[i].customerName.ToLower().Trim() == name.ToLower())
+            {
+                customersList[i] = (customersList[i].customerName,customersList[i].cardNumber, true);
+            }
+        }
+    }
+
+
+
+
     public static string GenerateRandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

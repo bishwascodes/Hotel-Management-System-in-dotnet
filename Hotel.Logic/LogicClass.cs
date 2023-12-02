@@ -211,6 +211,18 @@ public class LogicClass
         }
         return currentPrice;
     }
+    public static void updateTheRoomPrice(DataClass.RoomType roomTypeValue, decimal getPrice)
+    {
+        for (int i = 0; i < roomPrices.Count; i++)
+        {
+            var item = LogicClass.roomPrices[i];
+            if (item.roomType == roomTypeValue)
+            {
+                LogicClass.roomPrices[i] = (item.roomType, getPrice);
+                break;
+            }
+        }
+    }
     public static string GenerateRandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

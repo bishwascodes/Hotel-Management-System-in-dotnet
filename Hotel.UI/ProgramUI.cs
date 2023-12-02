@@ -26,8 +26,8 @@ do
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"************ Customer Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Customer \n 2. View Customer Details \n 3. Delete Customer \n 4. Save changes and exit to main menu ");
-            userChoice = getInt(1, 4, "Choose any number from 1 to 4: ");
+            Console.WriteLine($"************ Customer Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Customer \n 2. View Customer Details \n 3. Delete Customer \n 4. Prior Reservation for Customer\n 5. Save changes and exit to main menu ");
+            userChoice = getInt(1, 5, "Choose any number from 1 to 5: ");
             while (true)
             {
                 if (userChoice == 1)
@@ -46,12 +46,29 @@ do
                     removeACustomerUI();
                     break;
                 }
+
                 else if (userChoice == 4)
+                {
+                    Console.Clear();
+                    Console.WriteLine("***  Customer Management  *** Prior Reservation for Customers *** \n ");
+                    string customer = getString("Please enter the name of customer: ");
+                    if (!LogicClass.CustomerAlreadyAvailable(customer))
+                    {
+                        Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
+                        Console.ReadKey(true);
+                        recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
+                        break;
+                    }
+                    priorReservationForCustomerUI(customer);
+                    break;
+                }
+
+                else if (userChoice == 5)
                 {
                     break;
                 }
             }
-            if (userChoice == 4)
+            if (userChoice == 5)
             {
                 LogicClass.saveAllToFiles();
                 recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
@@ -70,7 +87,7 @@ do
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"************ Reservation Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Reservation \n 2. View All Reservations \n 3. Reservation Report by Customer Name \n 4. Reservation Report by Date \n 5. Available Room Search by Date \n 6. Save changes and return to main menu ");
+            Console.WriteLine($"************ Reservation Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Reservation \n 2. View All Reservations \n 3. Reservation Report by Customer Name(Future) \n 4. Reservation Report by Date \n 5. Available Room Search by Date \n 6. Save changes and return to main menu ");
             userChoice = getInt(1, 6, "Choose any number from 1 to 6: ");
             while (true)
             {
@@ -104,11 +121,12 @@ do
                         recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
                         break;
                     }
-                    Console.WriteLine($"\nReservation details for {customer} \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]\n");
+                    Console.WriteLine($"\nReservation details for {customer} (Future and Current Reservation Only) \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]\n");
                     int no_of_results = 0;
+                    var dateNow = DateOnly.FromDateTime(DateTime.Now);
                     foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
                     {
-                        if (customerName.ToLower().Trim() == customer.ToLower().Trim())
+                        if (customerName.ToLower().Trim() == customer.ToLower().Trim() && dateNow < endDate)
                         {
                             no_of_results++;
                             Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}]");
@@ -368,6 +386,33 @@ void removeACustomerUI()
             break;
         }
     }
+}
+void priorReservationForCustomerUI(string customer)
+{
+
+    Console.WriteLine($"\nReservation details for {customer} (Past Reservation Only) \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****]\n");
+    int no_of_results = 0;
+    var dateNow = DateOnly.FromDateTime(DateTime.Now);
+    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation) in LogicClass.reservationList)
+    {
+        if (customerName.ToLower().Trim() == customer.ToLower().Trim() && dateNow > endDate)
+        {
+            no_of_results++;
+            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}]");
+
+        }
+    }
+    if (no_of_results == 0)
+    {
+        Console.WriteLine($"\nUser {customer} has not made any reservations yet . ");
+    }
+    else
+    {
+        Console.WriteLine($"\nTotal {no_of_results} reservations found for {customer}. ");
+    }
+    Console.Write("press eny key to return back. ");
+    Console.ReadKey(true);
+    recentMessage = "";
 }
 void addANewRoomUI()
 {

@@ -88,7 +88,7 @@ public class DataClass
             foreach (string line in lines)
             {
                 string[] parts = line.Split(',');
-                if (parts.Length == 3 && Enum.TryParse(parts[0], out RoomType roomType) && decimal.TryParse(parts[1], out decimal dailyRate) && decimal.TryParse(parts[1], out decimal cleaningCost))
+                if (parts.Length == 3 && Enum.TryParse(parts[0], out RoomType roomType) && decimal.TryParse(parts[1], out decimal dailyRate) && decimal.TryParse(parts[2], out decimal cleaningCost))
                 {
                     roomPrices.Add((roomType, dailyRate, cleaningCost));
                 }

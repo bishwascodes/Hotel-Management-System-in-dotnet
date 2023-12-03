@@ -434,6 +434,7 @@ void promotionsAndReportsUI()
             }
             else if (userChoice == 6)
             {
+                utilizationReportForDateRangeUI();
                 break;
             }
             else if (userChoice == 7)
@@ -858,3 +859,59 @@ void utilizationReportForADayUI()
     Console.ReadKey(true);
     recentMessage = $"\n";
 }
+void utilizationReportForDateRangeUI()
+{
+    Console.Clear();
+    Console.WriteLine("***  Promotions and Reports *** View Utilization Reports For a Date Range *** \n ");
+
+    DateOnly startDate = getDate("Please Enter the start date: ");
+    DateOnly endDate = getDate("Please Enter the end date: ");
+
+    decimal totalRental = 0;
+    int totalBookedRooms = 0;
+
+    // Iterate over each day in the date range
+    for (DateOnly currentDate = startDate; currentDate < endDate; currentDate = currentDate.AddDays(1))
+    {
+        Console.WriteLine($"Utilization Report for {currentDate}:");
+
+        Console.WriteLine($"Here's the List of Already Booked Rooms For the day '{currentDate}' ");
+        Console.WriteLine($"[Room Number] -> [Room Type]");
+        decimal dailyRental = 0;
+
+        foreach (var item in LogicClass.unavailableRoomsList(currentDate))
+        {
+            Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
+            var theReservation = LogicClass.getReservationDetails(LogicClass.GetReservationNumberByDateAndRoom(currentDate, item.Item1));
+            dailyRental += theReservation.amountPaid / ((decimal)(theReservation.endDate.DayNumber - theReservation.startDate.DayNumber));
+        }
+
+        totalRental += dailyRental;
+        totalBookedRooms += LogicClass.unavailableRoomsList(currentDate).Count;
+
+        Console.WriteLine($"\n\nHere's the List of Available Rooms For the day '{currentDate}' ");
+        Console.WriteLine($"[Room Number] -> [Room Type]");
+        foreach (var item in LogicClass.availableRoomsList(currentDate))
+        {
+            Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
+        }
+
+        Console.WriteLine($"\n\nThe total rental earning for {LogicClass.unavailableRoomsList(currentDate).Count} no. of rooms for today is ${dailyRental}.");
+
+        double occupancyRate = (Double)LogicClass.unavailableRoomsList(currentDate).Count / (Double)LogicClass.roomList.Count;
+        occupancyRate = occupancyRate * 100;
+        Console.WriteLine($"\nThe occupancy rate for today is {occupancyRate}%.\n");
+    }
+
+    Console.WriteLine($"\n\nThe total rental earning for the date range is ${totalRental}.");
+
+    double overallOccupancyRate = (Double)totalBookedRooms / (Double)LogicClass.roomList.Count;
+    overallOccupancyRate = overallOccupancyRate * 100;
+    Console.WriteLine($"\nThe overall occupancy rate for the date range is {overallOccupancyRate}%.");
+
+    Console.Write($"Press any key to continue: ");
+    Console.ReadKey(true);
+    recentMessage = $"\n";
+}
+
+

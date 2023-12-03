@@ -19,14 +19,14 @@ string recentMessage = "";
 do
 {
     Console.Clear();
-    Console.WriteLine($"************ Main Menu ************ \n{recentMessage}\nWelcome to Hotel Management System. \n Here's you navigation menu: \n 1. Customer Management \n 2. Room Management \n 3. Reservation Management \n 4. System Configuration \n 5. Save and exit");
+    Console.WriteLine($"************ Main Menu ************ \n{recentMessage}\nWelcome to Hotel Management System. \n Here's you navigation menu: \n 1. Customer Management \n 2. Room Management \n 3. Reservation Management \n 4. Promotions and Reports \n 5. Save and exit");
     userChoice = getInt(1, 5, "Choose any number from 1 to 5: ");
     if (userChoice == 1)
     {
         while (true)
         {
             Console.Clear();
-            Console.WriteLine($"************ Customer Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Customer \n 2. View Customer Details \n 3. Delete Customer \n 4. Prior Reservation for Customer\n 5. Make Frequent Traveller \n 6. Save changes and exit to main menu ");
+            Console.WriteLine($"*****  Main Menu  ******* Customer Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Customer \n 2. View Customer Details \n 3. Delete Customer \n 4. Prior Reservation for Customer\n 5. Make Frequent Traveller \n 6. Save changes and exit to main menu ");
             userChoice = getInt(1, 6, "Choose any number from 1 to 6: ");
             while (true)
             {
@@ -231,7 +231,71 @@ do
     }
     else if (userChoice == 4)
     {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine($"*****  Main Menu  ******* Promotions and Reports ************ \n{recentMessage} Here's you navigation menu: \n 1. View Available Coupon Codes \n 2. Add a new Coupon Code \n 3. Delete Coupon Code \n 4. View Coupon Codes Reports \n 5. Utilization Report for a day \n 6.  Utilization Report for a date range \n 7. Save changes and exit to main menu ");
+            userChoice = getInt(1, 7, "Choose any number from 1 to 7: ");
+            while (true)
+            {
+                if (userChoice == 1)
+                {
+                    Console.WriteLine("Feature Coming soon");
+                    Console.ReadKey(true);
+                    break;
+                }
+                else if (userChoice == 2)
+                {
+                    Console.WriteLine("Feature Coming soon");
+                    Console.ReadKey(true);
+                    break;
+                }
 
+                else if (userChoice == 3)
+                {
+                    Console.WriteLine("Feature Coming soon");
+                    Console.ReadKey(true);
+                    break;
+                }
+
+                else if (userChoice == 4)
+                {
+                    Console.Clear();
+                    Console.WriteLine("***  Customer Management  *** Prior Reservation for Customers *** \n ");
+                    string customer = getString("Please enter the name of customer: ");
+                    if (!LogicClass.CustomerAlreadyAvailable(customer))
+                    {
+                        Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
+                        Console.ReadKey(true);
+                        recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
+                        break;
+                    }
+                    priorReservationForCustomerUI(customer);
+                    break;
+                }
+
+                else if (userChoice == 5)
+                {
+
+                    break;
+                }
+                else if (userChoice == 6)
+                {
+                    break;
+                }
+                else if (userChoice == 7)
+                {
+                    break;
+                }
+            }
+            if (userChoice == 7)
+            {
+                LogicClass.saveAllToFiles();
+                recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
+                break;
+            }
+
+        }
     }
     else if (userChoice == 5)
     {
@@ -558,8 +622,13 @@ void addNewReservationUI()
 
 
         bool hasCoupon;
-        decimal amountPaid = 200;
+        decimal amountPaid;
+        int noOfDays = LogicClass.GetDaysBetweenDates(startDate, endDate);
         int count = 0;
+        string couponCode;
+        double couponDiscountPer = 0;
+        double frequentTravelerDiscountPer = 0;
+        Guid reservationNumber = Guid.NewGuid();
         while (true)
         {
             string prompt = "Please enter Coupon Code if You have or enter X to skip: ";
@@ -567,7 +636,7 @@ void addNewReservationUI()
             {
                 prompt = "The coupon was invalid. Please try again or enter X to skip: ";
             }
-            string couponCode = getString(prompt);
+            couponCode = getString(prompt);
             couponCode = couponCode.Trim().ToUpper();
             if (couponCode == "X")
             {
@@ -584,8 +653,52 @@ void addNewReservationUI()
                 count++;
             }
         }
+        if (hasCoupon)
+        {
+            couponDiscountPer = LogicClass.getCouponDiscountPercent(couponCode);
+        }
+        if (LogicClass.isFrequentTraveler(customerName))
+        {
+            frequentTravelerDiscountPer = 12; //Making it manual(12%) upto this point
+        }
+        string output = " ";
+        var finalPrice = LogicClass.calculatePriceBeforeCheckout(LogicClass.getRoomPrice(LogicClass.getRoomType(roomNum)), noOfDays, couponDiscountPer, frequentTravelerDiscountPer);
+        amountPaid = finalPrice.Item1;
+        if (finalPrice.Item2 > 0 || finalPrice.Item2 > 0)
+        {
+            Console.WriteLine("\nWoW! You Got Some Discounts");
+            output = "Your Total Saving: ";
+            if (finalPrice.Item2 > 0)
+            {
+                output += $"Frequent Traveler Discount({frequentTravelerDiscountPer}%) : $";
+                output += finalPrice.Item2;
+                output += "\n";
+            }
+            if (finalPrice.Item3 > 0)
+            {
+                output += $"Coupon Discount for '{couponCode}' ({couponDiscountPer}%): $";
+                output += finalPrice.Item3;
+                output += "\n";
 
-        LogicClass.addToReservationList((Guid.NewGuid(), startDate, endDate, roomNum, customerName, LogicClass.GenerateRandomString(30), hasCoupon, amountPaid));
+            }
+            output += $"Total = ${LogicClass.getRoomPrice(LogicClass.getRoomType(roomNum))} * {noOfDays} days - ${finalPrice.Item3 + finalPrice.Item2} = ${amountPaid}";
+
+
+        }
+        else
+        {
+            output += $"Total = ${LogicClass.getRoomPrice(LogicClass.getRoomType(roomNum))} * {noOfDays}= {amountPaid}";
+        }
+        if (couponDiscountPer > 0)
+        {
+            LogicClass.couponRedemptionsList.Add((reservationNumber, couponCode.ToUpper().Trim(), couponDiscountPer));
+
+        }
+        Console.WriteLine(output);
+
+        LogicClass.addToReservationList((reservationNumber, startDate, endDate, roomNum, customerName, LogicClass.GenerateRandomString(30), hasCoupon, amountPaid));
+        Console.Write("Press any key to continue");
+        Console.ReadKey(true);
         recentMessage = $"\nMessage: New Reservation for {customerName} Successfully added.\n";
         break;
 

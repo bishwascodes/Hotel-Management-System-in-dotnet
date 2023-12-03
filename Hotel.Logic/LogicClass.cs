@@ -165,6 +165,8 @@ public class LogicClass
         DataClass.UpdateReservationsFile(FindFile(reservationsFile), reservationList);
         DataClass.UpdateRoomPricesFile(FindFile(roomPricesFile), roomPrices);
         DataClass.UpdateRefundsFile(FindFile(refundsFile), refundsList);
+        DataClass.UpdateCouponRedemptionsFile(FindFile(couponRedemptionFile), couponRedemptionsList);
+        DataClass.UpdateCouponsFile(FindFile(couponsFile), couponsList);
     }
 
 
@@ -256,6 +258,23 @@ public class LogicClass
         return isAvailable;
     }
 
+    public static int GetDaysBetweenDates(DateOnly startDate, DateOnly endDate)
+    {
+        var duration = endDate.DayNumber - startDate.DayNumber;
+        return duration;
+    }
+
+    public static DataClass.RoomType getRoomType(int ourRoomNumber)
+    {
+        foreach (var room in roomList)
+        {
+            if (room.roomNumber == ourRoomNumber)
+            {
+                return room.type;
+            }
+        }
+        return DataClass.RoomType.Single; //Setting default in case we can't find the roomNumber
+    }
     public static decimal getRoomPrice(DataClass.RoomType type)
     {
         decimal currentPrice = 0;
@@ -298,6 +317,11 @@ public class LogicClass
     public static bool isValidCoupon(string couponCode)
     {
         return couponsList.ContainsKey(couponCode);
+    }
+
+    public static double getCouponDiscountPercent(string couponCode)
+    {
+        return (double)couponsList[couponCode];
     }
     public static bool isFrequentTraveler(string name)
     {
@@ -352,6 +376,13 @@ public class LogicClass
         return reservationList[0];
     }
 
+
+    public static (decimal, decimal, decimal) calculatePriceBeforeCheckout(decimal initPrice, int noOfDays, double frequentTravelerDiscount = 0, double couponDiscount = 0)
+    {
+        decimal frequentTravelerDiscountAmt = (decimal)(frequentTravelerDiscount * noOfDays / 100) * initPrice;
+        decimal couponDiscountAmount = (decimal)(couponDiscount * noOfDays / 100) * initPrice;
+        return ((initPrice * noOfDays - frequentTravelerDiscountAmt - couponDiscountAmount), frequentTravelerDiscountAmt, couponDiscountAmount);
+    }
 
 
 

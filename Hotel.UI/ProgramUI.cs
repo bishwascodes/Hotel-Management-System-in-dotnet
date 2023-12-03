@@ -24,84 +24,7 @@ do
     userChoice = getInt(1, 5, "Choose any number from 1 to 5: ");
     if (userChoice == 1)
     {
-        while (true)
-        {
-            Console.Clear();
-            Console.WriteLine($"*****  Main Menu  ******* Customer Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Customer \n 2. View Customer Details \n 3. Delete Customer \n 4. Prior Reservation for Customer\n 5. Make Frequent Traveller \n 6. Save changes and exit to main menu ");
-            userChoice = getInt(1, 6, "Choose any number from 1 to 6: ");
-            while (true)
-            {
-                if (userChoice == 1)
-                {
-                    addNewCustomerUI();
-                    break;
-                }
-                else if (userChoice == 2)
-                {
-                    customersDetailsUI();
-                    break;
-                }
-
-                else if (userChoice == 3)
-                {
-                    removeACustomerUI();
-                    break;
-                }
-
-                else if (userChoice == 4)
-                {
-                    Console.Clear();
-                    Console.WriteLine("***  Customer Management  *** Prior Reservation for Customers *** \n ");
-                    string customer = getString("Please enter the name of customer: ");
-                    if (!LogicClass.CustomerAlreadyAvailable(customer))
-                    {
-                        Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
-                        Console.ReadKey(true);
-                        recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
-                        break;
-                    }
-                    priorReservationForCustomerUI(customer);
-                    break;
-                }
-
-                else if (userChoice == 5)
-                {
-                    Console.Clear();
-                    Console.WriteLine("***  Customer Management  *** Make Frequent Traveller *** \n ");
-                    string customer = getString("Please enter the name of customer: ");
-                    if (!LogicClass.CustomerAlreadyAvailable(customer))
-                    {
-                        Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
-                        Console.ReadKey(true);
-                        recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
-                        break;
-                    }
-                    if (LogicClass.isFrequentTraveler(customer))
-                    {
-                        Console.Write($"The user {customer} is already a Frequent Traveller. Press any key to continue: ");
-                        Console.ReadKey(true);
-                        recentMessage = $"\nMessage: The customer with the name {customer} is already a Frequent traveller. \n";
-                        break;
-                    }
-                    LogicClass.addAsFrequentTraveller(customer);
-                    Console.Write($"Success! The customer {customer} is now a Frequent traveller. Press any key to continue: ");
-                    Console.ReadKey(true);
-                    recentMessage = $"\nMessage:The user {customer} successfully added as a Frequent Traveller. \n";
-                    break;
-                }
-                else if (userChoice == 6)
-                {
-                    break;
-                }
-            }
-            if (userChoice == 6)
-            {
-                LogicClass.saveAllToFiles();
-                recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
-                break;
-            }
-
-        }
+        customerManagementUI();
 
     }
     else if (userChoice == 2)
@@ -110,183 +33,11 @@ do
     }
     else if (userChoice == 3)
     {
-        while (true)
-        {
-            Console.Clear();
-            Console.WriteLine($"************ Reservation Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Reservation \n 2. View All Reservations \n 3. Reservation Report by Customer Name(Future) \n 4. Reservation Report by Date \n 5. Available Room Search by Date \n 6. Refund a Reservation \n 7. Save changes and return to main menu ");
-            userChoice = getInt(1, 7, "Choose any number from 1 to 7: ");
-            while (true)
-            {
-                if (userChoice == 1)
-                {
-                    addNewReservationUI();
-                    break;
-                }
-                else if (userChoice == 2)
-                {
-                    Console.Clear();
-                    Console.WriteLine("***  Reservation Management  *** Reservation Details  *** \n [*********Reservation Number*********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****] [Has Coupon] [Paid Amount]");
-                    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
-                    {
-                        Console.WriteLine($"[ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
-                    }
-                    Console.Write("press eny key to return back. ");
-                    Console.ReadKey(true);
-                    recentMessage = "";
-                    break;
-                }
-                else if (userChoice == 3)
-                {
-                    Console.Clear();
-                    Console.WriteLine("***  Reservation Management  *** Reservation Report by Customer Name *** \n ");
-                    string customer = getString("Please enter the name of customer: ");
-                    if (!LogicClass.CustomerAlreadyAvailable(customer))
-                    {
-                        Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
-                        Console.ReadKey(true);
-                        recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
-                        break;
-                    }
-                    Console.WriteLine($"\nReservation details for {customer} (Future and Current Reservation Only) \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****] [Has Coupon] [Paid Amount]\n");
-                    int no_of_results = 0;
-                    var dateNow = DateOnly.FromDateTime(DateTime.Now);
-                    foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
-                    {
-                        if (customerName.ToLower().Trim() == customer.ToLower().Trim() && dateNow < endDate)
-                        {
-                            no_of_results++;
-                            Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
-
-                        }
-                    }
-                    if (no_of_results == 0)
-                    {
-                        Console.WriteLine($"\nUser {customer} has not made any reservations yet . ");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"\nTotal {no_of_results} reservations found for {customer}. ");
-                    }
-                    Console.Write("press eny key to return back. ");
-                    Console.ReadKey(true);
-                    recentMessage = "";
-                    break;
-                }
-                else if (userChoice == 4)
-                {
-                    reservationReportByDateUI();
-                    break;
-                }
-                else if (userChoice == 5)
-                {
-                    availableRoomSearchByDateUI();
-                    break;
-                }
-                else if (userChoice == 6)
-                {
-                    Console.Clear();
-                    Console.WriteLine("***  Reservation Management  *** Refund a Reservation*** \n ");
-                    string reservationNo = getString("Please Copy and Paste the Reservation Number(GUID) here(right click to paste): ").Trim();
-                    Guid reservationNoGuid;
-                    bool isValid = Guid.TryParse(reservationNo, out reservationNoGuid);
-                    if (!isValid || !LogicClass.isValidReservation(reservationNoGuid))
-                    {
-                        Console.WriteLine($"The reservation with that Reservation Number doesn't exist. Please try copying and pasting again. ");
-                        Console.Write("Press any key to continue");
-                        Console.ReadKey(true);
-                        Console.WriteLine();
-                        recentMessage = "\nMessage: Couldn't Find the reservation for the refund\n";
-                        break;
-                    }
-                    var reservationDetails = LogicClass.getReservationDetails(reservationNoGuid);
-                    Console.WriteLine($"Warning! You're about to refund ${reservationDetails.amountPaid} for {reservationDetails.customerName}. \nHere are the details about the refund: \nRoom Number -> {reservationDetails.roomNumber}, Start Date -> {reservationDetails.startDate}, End Date -> {reservationDetails.endDate}");
-                    string typedInput = getString("\nType 'X' to cancel or any other key to Proceed: ");
-                    if (typedInput.Trim().ToLower() == "x")
-                    {
-                        recentMessage = "\nMessage: Refund Request Cancelled!\n";
-                        break;
-                    }
-                    LogicClass.addToReFundsList((reservationDetails.Item1, reservationDetails.Item2, reservationDetails.Item3, reservationDetails.Item4, reservationDetails.Item5, reservationDetails.Item6, reservationDetails.Item7, reservationDetails.Item8, DateOnly.FromDateTime(DateTime.Now)));
-                    LogicClass.removeFromReservation(reservationNoGuid);
-
-
-                    Console.Write($"Refund Successful for {reservationDetails.customerName}. Press any key to continue: ");
-                    Console.ReadKey(true);
-                    Console.WriteLine();
-                    recentMessage = "\nMessage: Refund Request executed Successfully. \n";
-                    break;
-                }
-                else if (userChoice == 7)
-                {
-                    break;
-                }
-            }
-            if (userChoice == 7)
-            {
-                LogicClass.saveAllToFiles();
-                recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
-                break;
-            }
-
-        }
+        reservationManagementUI();
     }
     else if (userChoice == 4)
     {
-        while (true)
-        {
-            Console.Clear();
-            Console.WriteLine($"*****  Main Menu  ******* Promotions and Reports ************ \n{recentMessage} Here's you navigation menu: \n 1. View Available Coupon Codes \n 2. Add a new Coupon Code \n 3. Delete Coupon Code \n 4. View Coupon Codes Reports \n 5. Utilization Report for a day \n 6.  Utilization Report for a date range \n 7. Save changes and exit to main menu ");
-            userChoice = getInt(1, 7, "Choose any number from 1 to 7: ");
-            while (true)
-            {
-                if (userChoice == 1)
-                {
-                    viewAvailableCouponUI();
-                    break;
-                }
-                else if (userChoice == 2)
-                {
-                    Console.WriteLine("Feature Coming soon");
-                    Console.ReadKey(true);
-                    break;
-                }
-
-                else if (userChoice == 3)
-                {
-                    Console.WriteLine("Feature Coming soon");
-                    Console.ReadKey(true);
-                    break;
-                }
-
-                else if (userChoice == 4)
-                {
-                    viewCouponCodesReportUI();
-                    break;
-                }
-
-                else if (userChoice == 5)
-                {
-                    //5. Utilization Report for a day
-                    utilizationReportForADayUI();
-                    break;
-                }
-                else if (userChoice == 6)
-                {
-                    break;
-                }
-                else if (userChoice == 7)
-                {
-                    break;
-                }
-            }
-            if (userChoice == 7)
-            {
-                LogicClass.saveAllToFiles();
-                recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
-                break;
-            }
-
-        }
+        promotionsAndReportsUI();
     }
     else if (userChoice == 5)
     {
@@ -304,10 +55,15 @@ int getInt(int min = int.MinValue, int max = int.MaxValue, string Prompt = "")
     Console.Write(Prompt);
     bool isValid = false;
     int returnValue = 0;
+    int count = 0;
     while (isValid == false || returnValue < min || returnValue > max)
     {
-
+        if (count > 0)
+        {
+            Console.Write("Invalid input! Try again: ");
+        }
         isValid = int.TryParse(Console.ReadLine(), out returnValue);
+        count++;
     }
 
     return returnValue;
@@ -317,10 +73,15 @@ decimal getDecimal(decimal min = decimal.MinValue, decimal max = decimal.MaxValu
     Console.Write(Prompt);
     bool isValid = false;
     decimal returnValue = 0;
+    int count = 0;
     while (isValid == false || returnValue < min || returnValue > max)
     {
-
+        if (count > 0)
+        {
+            Console.Write("Invalid input! Try again: ");
+        }
         isValid = decimal.TryParse(Console.ReadLine(), out returnValue);
+        count++;
     }
 
     return returnValue;
@@ -330,10 +91,15 @@ long getLong(long min = long.MinValue, long max = long.MaxValue, string Prompt =
     Console.Write(Prompt);
     bool isValid = false;
     long returnValue = 0;
+    int count = 0;
     while (isValid == false || returnValue < min || returnValue > max)
     {
-
+        if (count > 0)
+        {
+            Console.Write("Invalid input! Try again: ");
+        }
         isValid = long.TryParse(Console.ReadLine(), out returnValue);
+        count++;
     }
 
     return returnValue;
@@ -361,6 +127,87 @@ DateOnly getDate(string prompt = "")
 }
 
 // UI Components
+void customerManagementUI()
+{
+    while (true)
+    {
+        Console.Clear();
+        Console.WriteLine($"*****  Main Menu  ******* Customer Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Customer \n 2. View Customer Details \n 3. Delete Customer \n 4. Prior Reservation for Customer\n 5. Make Frequent Traveller \n 6. Save changes and exit to main menu ");
+        userChoice = getInt(1, 6, "Choose any number from 1 to 6: ");
+        while (true)
+        {
+            if (userChoice == 1)
+            {
+                addNewCustomerUI();
+                break;
+            }
+            else if (userChoice == 2)
+            {
+                customersDetailsUI();
+                break;
+            }
+
+            else if (userChoice == 3)
+            {
+                removeACustomerUI();
+                break;
+            }
+
+            else if (userChoice == 4)
+            {
+                Console.Clear();
+                Console.WriteLine("***  Customer Management  *** Prior Reservation for Customers *** \n ");
+                string customer = getString("Please enter the name of customer: ");
+                if (!LogicClass.CustomerAlreadyAvailable(customer))
+                {
+                    Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
+                    Console.ReadKey(true);
+                    recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
+                    break;
+                }
+                priorReservationForCustomerUI(customer);
+                break;
+            }
+
+            else if (userChoice == 5)
+            {
+                Console.Clear();
+                Console.WriteLine("***  Customer Management  *** Make Frequent Traveller *** \n ");
+                string customer = getString("Please enter the name of customer: ");
+                if (!LogicClass.CustomerAlreadyAvailable(customer))
+                {
+                    Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
+                    Console.ReadKey(true);
+                    recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
+                    break;
+                }
+                if (LogicClass.isFrequentTraveler(customer))
+                {
+                    Console.Write($"The user {customer} is already a Frequent Traveller. Press any key to continue: ");
+                    Console.ReadKey(true);
+                    recentMessage = $"\nMessage: The customer with the name {customer} is already a Frequent traveller. \n";
+                    break;
+                }
+                LogicClass.addAsFrequentTraveller(customer);
+                Console.Write($"Success! The customer {customer} is now a Frequent traveller. Press any key to continue: ");
+                Console.ReadKey(true);
+                recentMessage = $"\nMessage:The user {customer} successfully added as a Frequent Traveller. \n";
+                break;
+            }
+            else if (userChoice == 6)
+            {
+                break;
+            }
+        }
+        if (userChoice == 6)
+        {
+            LogicClass.saveAllToFiles();
+            recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
+            break;
+        }
+
+    }
+}
 void roomManagementUI()
 {
     while (true)
@@ -421,6 +268,186 @@ void roomManagementUI()
             recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
             break;
         }
+    }
+}
+void reservationManagementUI()
+{
+    while (true)
+    {
+        Console.Clear();
+        Console.WriteLine($"************ Reservation Management ************ \n{recentMessage} Here's you navigation menu: \n 1. Add New Reservation \n 2. View All Reservations \n 3. Reservation Report by Customer Name(Future) \n 4. Reservation Report by Date \n 5. Available Room Search by Date \n 6. Refund a Reservation \n 7. Save changes and return to main menu ");
+        userChoice = getInt(1, 7, "Choose any number from 1 to 7: ");
+        while (true)
+        {
+            if (userChoice == 1)
+            {
+                addNewReservationUI();
+                break;
+            }
+            else if (userChoice == 2)
+            {
+                Console.Clear();
+                Console.WriteLine("***  Reservation Management  *** Reservation Details  *** \n [*********Reservation Number*********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****] [Has Coupon] [Paid Amount]");
+                foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
+                {
+                    Console.WriteLine($"[ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
+                }
+                Console.Write("press eny key to return back. ");
+                Console.ReadKey(true);
+                recentMessage = "";
+                break;
+            }
+            else if (userChoice == 3)
+            {
+                Console.Clear();
+                Console.WriteLine("***  Reservation Management  *** Reservation Report by Customer Name *** \n ");
+                string customer = getString("Please enter the name of customer: ");
+                if (!LogicClass.CustomerAlreadyAvailable(customer))
+                {
+                    Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
+                    Console.ReadKey(true);
+                    recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
+                    break;
+                }
+                Console.WriteLine($"\nReservation details for {customer} (Future and Current Reservation Only) \n\n[S.N] [*********Reservation Number**********] [*Start Date*] [*End   Date*] [Room ] [***********Name**********] [*****Payment Confirmation*****] [Has Coupon] [Paid Amount]\n");
+                int no_of_results = 0;
+                var dateNow = DateOnly.FromDateTime(DateTime.Now);
+                foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
+                {
+                    if (customerName.ToLower().Trim() == customer.ToLower().Trim() && dateNow < endDate)
+                    {
+                        no_of_results++;
+                        Console.WriteLine($"[ {no_of_results} ] [ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
+
+                    }
+                }
+                if (no_of_results == 0)
+                {
+                    Console.WriteLine($"\nUser {customer} has not made any reservations yet . ");
+                }
+                else
+                {
+                    Console.WriteLine($"\nTotal {no_of_results} reservations found for {customer}. ");
+                }
+                Console.Write("press eny key to return back. ");
+                Console.ReadKey(true);
+                recentMessage = "";
+                break;
+            }
+            else if (userChoice == 4)
+            {
+                reservationReportByDateUI();
+                break;
+            }
+            else if (userChoice == 5)
+            {
+                availableRoomSearchByDateUI();
+                break;
+            }
+            else if (userChoice == 6)
+            {
+                Console.Clear();
+                Console.WriteLine("***  Reservation Management  *** Refund a Reservation*** \n ");
+                string reservationNo = getString("Please Copy and Paste the Reservation Number(GUID) here(right click to paste): ").Trim();
+                Guid reservationNoGuid;
+                bool isValid = Guid.TryParse(reservationNo, out reservationNoGuid);
+                if (!isValid || !LogicClass.isValidReservation(reservationNoGuid))
+                {
+                    Console.WriteLine($"The reservation with that Reservation Number doesn't exist. Please try copying and pasting again. ");
+                    Console.Write("Press any key to continue");
+                    Console.ReadKey(true);
+                    Console.WriteLine();
+                    recentMessage = "\nMessage: Couldn't Find the reservation for the refund\n";
+                    break;
+                }
+                var reservationDetails = LogicClass.getReservationDetails(reservationNoGuid);
+                Console.WriteLine($"Warning! You're about to refund ${reservationDetails.amountPaid} for {reservationDetails.customerName}. \nHere are the details about the refund: \nRoom Number -> {reservationDetails.roomNumber}, Start Date -> {reservationDetails.startDate}, End Date -> {reservationDetails.endDate}");
+                string typedInput = getString("\nType 'X' to cancel or any other key to Proceed: ");
+                if (typedInput.Trim().ToLower() == "x")
+                {
+                    recentMessage = "\nMessage: Refund Request Cancelled!\n";
+                    break;
+                }
+                LogicClass.addToReFundsList((reservationDetails.Item1, reservationDetails.Item2, reservationDetails.Item3, reservationDetails.Item4, reservationDetails.Item5, reservationDetails.Item6, reservationDetails.Item7, reservationDetails.Item8, DateOnly.FromDateTime(DateTime.Now)));
+                LogicClass.removeFromReservation(reservationNoGuid);
+
+
+                Console.Write($"Refund Successful for {reservationDetails.customerName}. Press any key to continue: ");
+                Console.ReadKey(true);
+                Console.WriteLine();
+                recentMessage = "\nMessage: Refund Request executed Successfully. \n";
+                break;
+            }
+            else if (userChoice == 7)
+            {
+                break;
+            }
+        }
+        if (userChoice == 7)
+        {
+            LogicClass.saveAllToFiles();
+            recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
+            break;
+        }
+
+    }
+}
+void promotionsAndReportsUI()
+{
+    while (true)
+    {
+        Console.Clear();
+        Console.WriteLine($"*****  Main Menu  ******* Promotions and Reports ************ \n{recentMessage} Here's you navigation menu: \n 1. View Available Coupon Codes \n 2. Add a new Coupon Code \n 3. Delete Coupon Code \n 4. View Coupon Codes Reports \n 5. Utilization Report for a day \n 6.  Utilization Report for a date range \n 7. Save changes and exit to main menu ");
+        userChoice = getInt(1, 7, "Choose any number from 1 to 7: ");
+        while (true)
+        {
+            if (userChoice == 1)
+            {
+                viewAvailableCouponUI();
+                break;
+            }
+            else if (userChoice == 2)
+            {
+                Console.WriteLine("Feature Coming soon");
+                Console.ReadKey(true);
+                break;
+            }
+
+            else if (userChoice == 3)
+            {
+                Console.WriteLine("Feature Coming soon");
+                Console.ReadKey(true);
+                break;
+            }
+
+            else if (userChoice == 4)
+            {
+                viewCouponCodesReportUI();
+                break;
+            }
+
+            else if (userChoice == 5)
+            {
+                //5. Utilization Report for a day
+                utilizationReportForADayUI();
+                break;
+            }
+            else if (userChoice == 6)
+            {
+                break;
+            }
+            else if (userChoice == 7)
+            {
+                break;
+            }
+        }
+        if (userChoice == 7)
+        {
+            LogicClass.saveAllToFiles();
+            recentMessage = "\nMessage: All the recent changes were saved successfully in files.\n";
+            break;
+        }
+
     }
 }
 void addNewCustomerUI()

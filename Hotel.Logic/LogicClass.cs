@@ -182,7 +182,7 @@ public class LogicClass
         List<(int, string)> rooms = new();
         List<int> numbers = new();
 
-        foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in LogicClass.reservationList)
+        foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in reservationList)
         {
             if (checkingDate >= startDate && checkingDate < endDate)
             {
@@ -201,6 +201,28 @@ public class LogicClass
         // Check if tempRoomList is empty, and if so, return a new empty list
         return tempRoomList.Count > 0 ? tempRoomList : new List<(int, DataClass.RoomType)>();
     }
+    public static List<(int, DataClass.RoomType)> unavailableRoomsList(DateOnly checkingDate)
+    {
+        List<(int, DataClass.RoomType)> unavailableRooms = new List<(int, DataClass.RoomType)>();
+
+        foreach ((Guid guid, DateOnly startDate, DateOnly endDate, int roomNumber, string customerName, string paymentConfirmation, bool hasCoupon, decimal amountPaid) in reservationList)
+        {
+            if (checkingDate >= startDate && checkingDate < endDate)
+            {
+                foreach ((int num, DataClass.RoomType type) in roomList)
+                {
+                    if (num == roomNumber)
+                    {
+                        unavailableRooms.Add((num, type));
+                        break;
+                    }
+                }
+            }
+        }
+
+        return unavailableRooms;
+    }
+
     public static bool RoomIsAvailable(DateOnly bookingStartDate, DateOnly bookingEndDate, int roomNumber)
     {
         var newReservationStartDate = bookingStartDate;

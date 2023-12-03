@@ -280,11 +280,7 @@ public class LogicClass
         return isAvailable;
     }
 
-    public static int GetDaysBetweenDates(DateOnly startDate, DateOnly endDate)
-    {
-        var duration = endDate.DayNumber - startDate.DayNumber;
-        return duration;
-    }
+
 
     public static DataClass.RoomType getRoomType(int ourRoomNumber)
     {
@@ -446,6 +442,11 @@ public class LogicClass
         }
 
         return new string(result);
+    }
+    public static int GetDaysBetweenDates(DateOnly startDate, DateOnly endDate)
+    {
+        var duration = endDate.DayNumber - startDate.DayNumber;
+        return duration;
     }
 
 }

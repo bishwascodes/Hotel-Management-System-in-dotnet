@@ -260,66 +260,14 @@ do
 
                 else if (userChoice == 4)
                 {
-                    Console.Clear();
-                    Console.WriteLine("***  Promotions and Reports *** View Coupon Codes Reports *** \n ");
-                    Console.WriteLine($"Total no. of Coupons used by customer till now: {LogicClass.couponRedemptionsList.Count}\n");
-                    var uniqueCoupons = LogicClass.getUniqueCouponList();
-                    string text = "";
-                    for (int i = 0; i < uniqueCoupons.Count; i++)
-                    {
-                        text += $"{uniqueCoupons[i]}, ";
-                    }
-                    Console.WriteLine($"Total Unique no. of Coupons used by customer till now: {uniqueCoupons.Count} and the coupon codes are {text}\n");
-
-                    Console.WriteLine($"Here is the report of Coupon Uses: ");
-                    Console.WriteLine($"[Coupon Used] [***********Name**********] [Discount%] [*********Reservation Number*********]");
-
-                    for (int i = 0; i < LogicClass.couponRedemptionsList.Count; i++)
-                    {
-                        var item = LogicClass.couponRedemptionsList[i];
-                        var reservationDetails = LogicClass.getReservationDetails(item.reservationNumber);
-                        Console.WriteLine($"[{item.couponCode,11}] [{reservationDetails.customerName,25}] [{item.discountPercentage,9}] [{item.reservationNumber,-30}]");
-                    }
-
-
-                    Console.Write($"Press any key to continue: ");
-                    Console.ReadKey(true);
-                    recentMessage = $"\n";
+                    viewCouponCodesReportUI();
                     break;
                 }
 
                 else if (userChoice == 5)
                 {
                     //5. Utilization Report for a day
-                    Console.Clear();
-                    Console.WriteLine("***  Promotions and Reports *** View Utilization Reports For a day*** \n ");
-                    DateOnly inputDate = getDate("Please Enter the date that you want to check for: ");
-                    Console.WriteLine($"Here's the List of Already Booked Rooms For the day '{inputDate}' ");
-                    Console.WriteLine($"[Room Number] -> [Room Type]");
-                    decimal rental = 0;
-                    for (int i = 0; i < LogicClass.unavailableRoomsList(inputDate).Count; i++)
-                    {
-                        var item = LogicClass.unavailableRoomsList(inputDate)[i];
-                        Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
-                        rental += LogicClass.getRoomPrice(item.Item2);
-                    }
-
-                    Console.WriteLine($"\n\nHere's the List of Available Rooms For the day '{inputDate}' ");
-                    Console.WriteLine($"[Room Number] -> [Room Type]");
-                    foreach (var item in LogicClass.availableRoomsList(inputDate))
-                    {
-                        Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
-                    }
-
-                    Console.WriteLine($"\n\nThe total rental earning for {LogicClass.unavailableRoomsList(inputDate).Count} no. of rooms for today is ${rental}.");
-
-                    double occupancyRate = (Double)LogicClass.unavailableRoomsList(inputDate).Count / (Double)LogicClass.roomList.Count;
-                    occupancyRate = occupancyRate * 100;
-                    Console.WriteLine($"\nThe occupancy rate for today is {occupancyRate}%.");
-
-                    Console.Write($"Press any key to continue: ");
-                    Console.ReadKey(true);
-                    recentMessage = $"\n";
+                    utilizationReportForADayUI();
                     break;
                 }
                 else if (userChoice == 6)
@@ -818,6 +766,66 @@ void viewAvailableCouponUI()
 
 
     Console.Write($"\nPress any key to continue: ");
+    Console.ReadKey(true);
+    recentMessage = $"\n";
+}
+void viewCouponCodesReportUI()
+{
+    Console.Clear();
+    Console.WriteLine("***  Promotions and Reports *** View Coupon Codes Reports *** \n ");
+    Console.WriteLine($"Total no. of Coupons used by customer till now: {LogicClass.couponRedemptionsList.Count}\n");
+    var uniqueCoupons = LogicClass.getUniqueCouponList();
+    string text = "";
+    for (int i = 0; i < uniqueCoupons.Count; i++)
+    {
+        text += $"{uniqueCoupons[i]}, ";
+    }
+    Console.WriteLine($"Total Unique no. of Coupons used by customer till now: {uniqueCoupons.Count} and the coupon codes are {text}\n");
+
+    Console.WriteLine($"Here is the report of Coupon Uses: ");
+    Console.WriteLine($"[Coupon Used] [***********Name**********] [Discount%] [*********Reservation Number*********]");
+
+    for (int i = 0; i < LogicClass.couponRedemptionsList.Count; i++)
+    {
+        var item = LogicClass.couponRedemptionsList[i];
+        var reservationDetails = LogicClass.getReservationDetails(item.reservationNumber);
+        Console.WriteLine($"[{item.couponCode,11}] [{reservationDetails.customerName,25}] [{item.discountPercentage,9}] [{item.reservationNumber,-30}]");
+    }
+
+
+    Console.Write($"Press any key to continue: ");
+    Console.ReadKey(true);
+    recentMessage = $"\n";
+}
+void utilizationReportForADayUI()
+{
+    Console.Clear();
+    Console.WriteLine("***  Promotions and Reports *** View Utilization Reports For a day*** \n ");
+    DateOnly inputDate = getDate("Please Enter the date that you want to check for: ");
+    Console.WriteLine($"Here's the List of Already Booked Rooms For the day '{inputDate}' ");
+    Console.WriteLine($"[Room Number] -> [Room Type]");
+    decimal rental = 0;
+    for (int i = 0; i < LogicClass.unavailableRoomsList(inputDate).Count; i++)
+    {
+        var item = LogicClass.unavailableRoomsList(inputDate)[i];
+        Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
+        rental += LogicClass.getRoomPrice(item.Item2);
+    }
+
+    Console.WriteLine($"\n\nHere's the List of Available Rooms For the day '{inputDate}' ");
+    Console.WriteLine($"[Room Number] -> [Room Type]");
+    foreach (var item in LogicClass.availableRoomsList(inputDate))
+    {
+        Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
+    }
+
+    Console.WriteLine($"\n\nThe total rental earning for {LogicClass.unavailableRoomsList(inputDate).Count} no. of rooms for today is ${rental}.");
+
+    double occupancyRate = (Double)LogicClass.unavailableRoomsList(inputDate).Count / (Double)LogicClass.roomList.Count;
+    occupancyRate = occupancyRate * 100;
+    Console.WriteLine($"\nThe occupancy rate for today is {occupancyRate}%.");
+
+    Console.Write($"Press any key to continue: ");
     Console.ReadKey(true);
     recentMessage = $"\n";
 }

@@ -428,6 +428,20 @@ public class LogicClass
         return List;
     }
 
+    public static Guid GetReservationNumberByDateAndRoom(DateOnly targetDate, int roomNumber)
+    {
+        foreach (var reservation in reservationList)
+        {
+            if (targetDate >= reservation.startDate && targetDate < reservation.endDate && roomNumber == reservation.roomNumber)
+            {
+                return reservation.reservationNumber;
+            }
+        }
+
+        // No reservation found for the given date and room number
+        return Guid.NewGuid();
+    }
+
 
 
     public static string GenerateRandomString(int length)

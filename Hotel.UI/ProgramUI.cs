@@ -835,8 +835,10 @@ void utilizationReportForADayUI()
     for (int i = 0; i < LogicClass.unavailableRoomsList(inputDate).Count; i++)
     {
         var item = LogicClass.unavailableRoomsList(inputDate)[i];
+
         Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
-        rental += LogicClass.getRoomPrice(item.Item2);
+        var theReservation = LogicClass.getReservationDetails(LogicClass.GetReservationNumberByDateAndRoom(inputDate, item.Item1));
+        rental += theReservation.amountPaid / ((decimal)(theReservation.endDate.DayNumber - theReservation.startDate.DayNumber));
     }
 
     Console.WriteLine($"\n\nHere's the List of Available Rooms For the day '{inputDate}' ");

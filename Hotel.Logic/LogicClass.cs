@@ -383,6 +383,32 @@ public class LogicClass
         decimal couponDiscountAmount = (decimal)(couponDiscount * noOfDays / 100) * initPrice;
         return ((initPrice * noOfDays - frequentTravelerDiscountAmt - couponDiscountAmount), frequentTravelerDiscountAmt, couponDiscountAmount);
     }
+    public static List<string> getUniqueCouponList()
+    {
+        List<string> uniqueCouponsList = new List<string>();
+        for (int i = 0; i < couponRedemptionsList.Count; i++)
+        {
+            string currentCoupon = couponRedemptionsList[i].couponCode;
+            if (!uniqueCouponsList.Contains(currentCoupon))
+            {
+                uniqueCouponsList.Add(currentCoupon);
+            }
+        }
+        return uniqueCouponsList;
+    }
+    public static List<(Guid reservationNumber, string couponCode, double discountPercentage)> getCouponRedemptionListByCouponCode(string CouponCode)
+    {
+        List<(Guid reservationNumber, string couponCode, double discountPercentage)> List = new();
+        for (int i = 0; i < couponRedemptionsList.Count; i++)
+        {
+            var item = couponRedemptionsList[i];
+            if (item.couponCode == CouponCode)
+            {
+                List.Add(item);
+            }
+        }
+        return List;
+    }
 
 
 

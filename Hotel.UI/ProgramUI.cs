@@ -240,8 +240,23 @@ do
             {
                 if (userChoice == 1)
                 {
-                    Console.WriteLine("Feature Coming soon");
+                    Console.Clear();
+                    Console.WriteLine("***  Promotions and Reports *** View Available Coupon Codes *** \n ");
+
+                    Console.WriteLine($"Here is the List of available Coupon Codes: ");
+                    Console.WriteLine($"Use them to do some saving. We love you. \n");
+                    Console.WriteLine($"[Coupon Code] [Discount%]");
+
+                    foreach (var item in LogicClass.couponsList)
+                    {
+
+                        Console.WriteLine($"[{item.Key,-11}] [{item.Value,9}]");
+                    }
+
+
+                    Console.Write($"\nPress any key to continue: ");
                     Console.ReadKey(true);
+                    recentMessage = $"\n";
                     break;
                 }
                 else if (userChoice == 2)
@@ -261,16 +276,30 @@ do
                 else if (userChoice == 4)
                 {
                     Console.Clear();
-                    Console.WriteLine("***  Customer Management  *** Prior Reservation for Customers *** \n ");
-                    string customer = getString("Please enter the name of customer: ");
-                    if (!LogicClass.CustomerAlreadyAvailable(customer))
+                    Console.WriteLine("***  Promotions and Reports *** View Coupon Codes Reports *** \n ");
+                    Console.WriteLine($"Total no. of Coupons used by customer till now: {LogicClass.couponRedemptionsList.Count}\n");
+                    var uniqueCoupons = LogicClass.getUniqueCouponList();
+                    string text = "";
+                    for (int i = 0; i < uniqueCoupons.Count; i++)
                     {
-                        Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
-                        Console.ReadKey(true);
-                        recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
-                        break;
+                        text += $"{uniqueCoupons[i]}, ";
                     }
-                    priorReservationForCustomerUI(customer);
+                    Console.WriteLine($"Total Unique no. of Coupons used by customer till now: {uniqueCoupons.Count} and the coupon codes are {text}\n");
+
+                    Console.WriteLine($"Here is the report of Coupon Uses: ");
+                    Console.WriteLine($"[Coupon Used] [***********Name**********] [Discount%] [*********Reservation Number*********]");
+
+                    for (int i = 0; i < LogicClass.couponRedemptionsList.Count; i++)
+                    {
+                        var item = LogicClass.couponRedemptionsList[i];
+                        var reservationDetails = LogicClass.getReservationDetails(item.reservationNumber);
+                        Console.WriteLine($"[{item.couponCode,11}] [{reservationDetails.customerName,25}] [{item.discountPercentage,9}] [{item.reservationNumber,-30}]");
+                    }
+
+
+                    Console.Write($"Press any key to continue: ");
+                    Console.ReadKey(true);
+                    recentMessage = $"\n";
                     break;
                 }
 

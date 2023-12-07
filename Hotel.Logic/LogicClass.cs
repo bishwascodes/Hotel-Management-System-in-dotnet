@@ -25,13 +25,13 @@ public class LogicClass
         }
     }
     // File Paths
-    public static string roomsFile = "Rooms.txt";
-    public static string reservationsFile = "Reservations.txt";
-    public static string customersFile = "Customers.txt";
-    public static string roomPricesFile = "RoomPrices.txt";
-    public static string couponsFile = "Coupons.txt";
-    public static string couponRedemptionFile = "CouponRedemption.txt";
-    public static string refundsFile = "Refunds.txt";
+    public const string roomsFile = "Rooms.txt";
+    public const string reservationsFile = "Reservations.txt";
+    public const string customersFile = "Customers.txt";
+    public const string roomPricesFile = "RoomPrices.txt";
+    public const string couponsFile = "Coupons.txt";
+    public const string couponRedemptionFile = "CouponRedemption.txt";
+    public const string refundsFile = "Refunds.txt";
 
     // Init the lists
     public static List<(int roomNumber, DataClass.RoomType type)> roomList = new();

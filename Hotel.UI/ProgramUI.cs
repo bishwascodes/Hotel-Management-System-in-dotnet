@@ -125,6 +125,16 @@ DateOnly getDate(string prompt = "")
     }
 
 }
+void PressToContinue(string prompt = "Press any key to continue: ")
+{
+    Console.Write(prompt);
+    while (Console.KeyAvailable)
+    {
+        Console.ReadKey(true);
+    }
+    Console.ReadKey(true);
+
+}
 
 // UI Components
 void customerManagementUI()
@@ -155,13 +165,10 @@ void customerManagementUI()
 
             else if (userChoice == 4)
             {
-                Console.Clear();
-                Console.WriteLine("***  Customer Management  *** Prior Reservation for Customers *** \n ");
-                string customer = getString("Please enter the name of customer: ");
+                var customer = priorReservationForCustomerUITop();
                 if (!LogicClass.CustomerAlreadyAvailable(customer))
                 {
-                    Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
-                    Console.ReadKey(true);
+                    PressToContinue($"The user {customer} doesn't exist. Press any key to continue: ");
                     recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
                     break;
                 }
@@ -176,21 +183,21 @@ void customerManagementUI()
                 string customer = getString("Please enter the name of customer: ");
                 if (!LogicClass.CustomerAlreadyAvailable(customer))
                 {
-                    Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
-                    Console.ReadKey(true);
+                    Console.Write($"The user {customer} doesn't exist. ");
+                    PressToContinue();
                     recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
                     break;
                 }
                 if (LogicClass.isFrequentTraveler(customer))
                 {
-                    Console.Write($"The user {customer} is already a Frequent Traveller. Press any key to continue: ");
-                    Console.ReadKey(true);
+                    Console.Write($"The user {customer} is already a Frequent Traveller. ");
+                    PressToContinue();
                     recentMessage = $"\nMessage: The customer with the name {customer} is already a Frequent traveller. \n";
                     break;
                 }
                 LogicClass.addAsFrequentTraveller(customer);
-                Console.Write($"Success! The customer {customer} is now a Frequent traveller. Press any key to continue: ");
-                Console.ReadKey(true);
+                Console.Write($"Success! The customer {customer} is now a Frequent traveller.");
+                PressToContinue();
                 recentMessage = $"\nMessage:The user {customer} successfully added as a Frequent Traveller. \n";
                 break;
             }
@@ -224,41 +231,16 @@ void roomManagementUI()
             }
             else if (userChoice == 2)
             {
-                bool isTrue = false;
-                int count = 0;
-                DataClass.RoomType roomTypeValue = new();
-                while (!isTrue)
-                {
-                    string prompt = "Enter the room type that you want to change the price of: ";
-                    if (count > 0)
-                    {
-                        prompt = "Please Enter the valid room type : ";
-                    }
-                    string input = getString(prompt);
-                    if (int.TryParse(input, out int tempVal))
-                    {
-                        count++;
-                        continue;
-                    }
-                    isTrue = Enum.TryParse(input, out roomTypeValue);
-                    count++;
-                }
-                decimal currentPrice = LogicClass.getRoomPrice(roomTypeValue);
-
-                Console.WriteLine($"The current price for the room type '{roomTypeValue}' is {currentPrice}");
-                decimal getRoomPrice = getDecimal(Prompt: "Enter the New Price for your room type. ");
-
-                decimal currrentCleaningPrice = LogicClass.getRoomCleaningPrice(roomTypeValue);
-                Console.WriteLine($"The current cleaning price for the room type '{roomTypeValue}' is {currrentCleaningPrice}");
-                decimal getCleaningPrice = getDecimal(Prompt: "Enter the New Cleaning Price for your room type. ");
-                LogicClass.updateTheRoomPrice(roomTypeValue, getRoomPrice, getCleaningPrice);
-
-                recentMessage = "\nMessage: The Price was updated.\n";
+                changeRoomPriceUI();
+                break;
+            }
+            else if (userChoice == 3)
+            {
+                PressToContinue("Feature Coming soon. Press any key to continue: ");
                 break;
             }
             else if (userChoice == 4)
             {
-
                 break;
             }
         }
@@ -292,8 +274,7 @@ void reservationManagementUI()
                 {
                     Console.WriteLine($"[ {guid,-30}] [{startDate,12}] [{endDate,12}] [{roomNumber,5}] [{customerName,25}] [{paymentConfirmation,30}] [{hasCoupon,10}] [{amountPaid,11}]");
                 }
-                Console.Write("press eny key to return back. ");
-                Console.ReadKey(true);
+                PressToContinue();
                 recentMessage = "";
                 break;
             }
@@ -304,8 +285,8 @@ void reservationManagementUI()
                 string customer = getString("Please enter the name of customer: ");
                 if (!LogicClass.CustomerAlreadyAvailable(customer))
                 {
-                    Console.Write($"The user {customer} doesn't exist. Press any key to continue: ");
-                    Console.ReadKey(true);
+                    Console.Write($"The user {customer} doesn't exist. ");
+                    PressToContinue();
                     recentMessage = $"\nMessage: The customer with the name {customer} not found. \n";
                     break;
                 }
@@ -329,8 +310,7 @@ void reservationManagementUI()
                 {
                     Console.WriteLine($"\nTotal {no_of_results} reservations found for {customer}. ");
                 }
-                Console.Write("press eny key to return back. ");
-                Console.ReadKey(true);
+                PressToContinue();
                 recentMessage = "";
                 break;
             }
@@ -354,8 +334,7 @@ void reservationManagementUI()
                 if (!isValid || !LogicClass.isValidReservation(reservationNoGuid))
                 {
                     Console.WriteLine($"The reservation with that Reservation Number doesn't exist. Please try copying and pasting again. ");
-                    Console.Write("Press any key to continue");
-                    Console.ReadKey(true);
+                    PressToContinue();
                     Console.WriteLine();
                     recentMessage = "\nMessage: Couldn't Find the reservation for the refund\n";
                     break;
@@ -372,8 +351,8 @@ void reservationManagementUI()
                 LogicClass.removeFromReservation(reservationNoGuid);
 
 
-                Console.Write($"Refund Successful for {reservationDetails.customerName}. Press any key to continue: ");
-                Console.ReadKey(true);
+                Console.Write($"Refund Successful for {reservationDetails.customerName}. ");
+                PressToContinue();
                 Console.WriteLine();
                 recentMessage = "\nMessage: Refund Request executed Successfully. \n";
                 break;
@@ -408,15 +387,13 @@ void promotionsAndReportsUI()
             }
             else if (userChoice == 2)
             {
-                Console.WriteLine("Feature Coming soon");
-                Console.ReadKey(true);
+                PressToContinue("Feature Coming soon. Press any key to continue: ");
                 break;
             }
 
             else if (userChoice == 3)
             {
-                Console.WriteLine("Feature Coming soon");
-                Console.ReadKey(true);
+                PressToContinue("Feature Coming soon. Press any key to continue: ");
                 break;
             }
 
@@ -466,8 +443,7 @@ void addNewCustomerUI()
                 break;
             }
             Console.WriteLine($"The customer with the same name '{name}' already exists.");
-            Console.Write("Press any key to continue");
-            Console.ReadKey(true);
+            PressToContinue();
             Console.WriteLine();
             recentMessage = "\nMessage: Couldn't add new customer\n";
             break;
@@ -491,8 +467,7 @@ void customersDetailsUI()
     {
         Console.WriteLine($"[ {name,-30}] [{id,30}] [{isFreqTraveler,21}]");
     }
-    Console.Write("press eny key to return back. ");
-    Console.ReadKey(true);
+    PressToContinue();
     recentMessage = "";
 
 }
@@ -531,6 +506,14 @@ void removeACustomerUI()
         }
     }
 }
+string priorReservationForCustomerUITop()
+{
+    Console.Clear();
+    Console.WriteLine("***  Customer Management  *** Prior Reservation for Customers *** \n ");
+    string customer = getString("Please enter the name of customer: ");
+    return customer;
+
+}
 void priorReservationForCustomerUI(string customer)
 {
 
@@ -554,8 +537,7 @@ void priorReservationForCustomerUI(string customer)
     {
         Console.WriteLine($"\nTotal {no_of_results} reservations found for {customer}. ");
     }
-    Console.Write("press eny key to return back. ");
-    Console.ReadKey(true);
+    PressToContinue();
     recentMessage = "";
 }
 void addANewRoomUI()
@@ -570,8 +552,7 @@ void addANewRoomUI()
         if (!LogicClass.RoomAvailableToCreate(roomNum))
         {
             Console.WriteLine($"The room with the same number '{roomNum}' already exists.");
-            Console.Write("Press any key to continue");
-            Console.ReadKey(true);
+            PressToContinue();
             Console.WriteLine();
             recentMessage = "\nMessage: Couldn't add new room.\n";
             break;
@@ -596,10 +577,43 @@ void addANewRoomUI()
 
     }
 }
+void changeRoomPriceUI()
+{
+    bool isTrue = false;
+    int count = 0;
+    DataClass.RoomType roomTypeValue = new();
+    while (!isTrue)
+    {
+        string prompt = "Enter the room type that you want to change the price of: ";
+        if (count > 0)
+        {
+            prompt = "Please Enter the valid room type : ";
+        }
+        string input = getString(prompt);
+        if (int.TryParse(input, out int tempVal))
+        {
+            count++;
+            continue;
+        }
+        isTrue = Enum.TryParse(input, out roomTypeValue);
+        count++;
+    }
+    decimal currentPrice = LogicClass.getRoomPrice(roomTypeValue);
+
+    Console.WriteLine($"The current price for the room type '{roomTypeValue}' is {currentPrice}");
+    decimal getRoomPrice = getDecimal(Prompt: "Enter the New Price for your room type. ");
+
+    decimal currrentCleaningPrice = LogicClass.getRoomCleaningPrice(roomTypeValue);
+    Console.WriteLine($"The current cleaning price for the room type '{roomTypeValue}' is {currrentCleaningPrice}");
+    decimal getCleaningPrice = getDecimal(Prompt: "Enter the New Cleaning Price for your room type. ");
+    LogicClass.updateTheRoomPrice(roomTypeValue, getRoomPrice, getCleaningPrice);
+
+    recentMessage = "\nMessage: The Price was updated.\n";
+}
 void addNewReservationUI()
 {
     Console.Clear();
-    Console.WriteLine("*** Reservation Management *** Add New Reservation  *** \n Please enter the room below or Press X to exit.: ");
+    Console.WriteLine("*** Reservation Management *** Add New Reservation  *** \n ");
     int roomNum;
     DateOnly startDate;
     DateOnly endDate;
@@ -608,8 +622,8 @@ void addNewReservationUI()
         roomNum = getInt(Prompt: "Please, Enter the room number that you want to book: ");
         if (LogicClass.RoomAvailableToCreate(roomNum))
         {
-            Console.Write("The room number that you entered doesn't exist. Please create one to proceed booking. Press any key to continue: ");
-            Console.ReadKey(true);
+            Console.Write("The room number that you entered doesn't exist. Please create one to proceed booking. ");
+            PressToContinue();
             recentMessage = "\nMessage: Booking can't proceed. Please make a new room. \n";
             break;
         }
@@ -617,24 +631,22 @@ void addNewReservationUI()
         endDate = getDate("Please, Enter the ending date: ");
         if (endDate < startDate)
         {
-            Console.Write("Invalid Input of the date. Press any key to continue: ");
-            Console.ReadKey(true);
-            Console.WriteLine();
+            Console.Write("Invalid Input of the date.");
+            PressToContinue();
             continue;
         }
         if (!LogicClass.RoomIsAvailable(startDate, endDate, roomNum))
         {
             Console.WriteLine($"The room '{roomNum}' is already booked on between '{startDate}'-'{endDate}'.");
-            Console.Write("Press any key to continue");
-            Console.ReadKey(true);
+            PressToContinue();
             recentMessage = "\nMessage: Couldn't make the new reservation.\n";
             break;
         }
         string customerName = getString("Please enter the customer name: ");
         if (!LogicClass.CustomerAlreadyAvailable(customerName))
         {
-            Console.Write("The user doesn't exist. Please create one to proceed booking. Press any key to continue: ");
-            Console.ReadKey(true);
+            Console.Write("The user doesn't exist. Please create one to proceed booking. ");
+            PressToContinue();
             recentMessage = "\nMessage: Booking can't proceed. Please make a new user. \n";
             break;
         }
@@ -716,8 +728,7 @@ void addNewReservationUI()
         Console.WriteLine(output);
 
         LogicClass.addToReservationList((reservationNumber, startDate, endDate, roomNum, customerName, LogicClass.GenerateRandomString(30), hasCoupon, amountPaid));
-        Console.Write("Press any key to continue");
-        Console.ReadKey(true);
+        PressToContinue();
         recentMessage = $"\nMessage: New Reservation for {customerName} Successfully added.\n";
         break;
 
@@ -748,8 +759,7 @@ void reservationReportByDateUI()
     {
         Console.WriteLine($"\nTotal {no_of_results} reservations found on given date - '{checkingDate}' . ");
     }
-    Console.Write("press eny key to return back. ");
-    Console.ReadKey(true);
+    PressToContinue();
     recentMessage = "";
 }
 void availableRoomSearchByDateUI()
@@ -772,8 +782,7 @@ void availableRoomSearchByDateUI()
         }
         Console.WriteLine($"\n{availableRoomLists.Count} numbers of rooms are available.");
     }
-    Console.Write("\npress eny key to return back. ");
-    Console.ReadKey(true);
+    PressToContinue();
     recentMessage = "";
 }
 
@@ -793,8 +802,7 @@ void viewAvailableCouponUI()
     }
 
 
-    Console.Write($"\nPress any key to continue: ");
-    Console.ReadKey(true);
+    PressToContinue();
     recentMessage = $"\n";
 }
 void viewCouponCodesReportUI()
@@ -821,8 +829,7 @@ void viewCouponCodesReportUI()
     }
 
 
-    Console.Write($"Press any key to continue: ");
-    Console.ReadKey(true);
+    PressToContinue();
     recentMessage = $"\n";
 }
 void utilizationReportForADayUI()
@@ -855,8 +862,7 @@ void utilizationReportForADayUI()
     occupancyRate = occupancyRate * 100;
     Console.WriteLine($"\nThe occupancy rate for today is {occupancyRate}%.");
 
-    Console.Write($"Press any key to continue: ");
-    Console.ReadKey(true);
+    PressToContinue();
     recentMessage = $"\n";
 }
 void utilizationReportForDateRangeUI()
@@ -909,8 +915,7 @@ void utilizationReportForDateRangeUI()
     overallOccupancyRate = overallOccupancyRate * 100;
     Console.WriteLine($"\nThe overall occupancy rate for the date range is {overallOccupancyRate}%.");
 
-    Console.Write($"Press any key to continue: ");
-    Console.ReadKey(true);
+    PressToContinue();
     recentMessage = $"\n";
 }
 

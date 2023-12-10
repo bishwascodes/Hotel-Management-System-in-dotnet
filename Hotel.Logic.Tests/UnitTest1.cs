@@ -571,7 +571,7 @@ public class UnitTest1
         DateOnly checkingDate = new DateOnly(2023, 10, 5);
 
         // When
-        var result = LogicClass.availableRoomsList(checkingDate);
+        var result = LogicClass.availableRoomsListByDate(checkingDate);
 
         // Then
         Assert.True(result.Count > 0);
@@ -600,7 +600,7 @@ public class UnitTest1
         LogicClass.roomList.Add((reservedRoomNumber, DataClass.RoomType.Single));
 
         // When
-        var result = LogicClass.availableRoomsList(checkingDate);
+        var result = LogicClass.availableRoomsListByDate(checkingDate);
 
         // Then
         Assert.Empty(result); // Room with number 101 is reserved on the specified date, so it should not be available
@@ -614,7 +614,7 @@ public class UnitTest1
         DateOnly checkingDate = new DateOnly(2023, 10, 5);
 
         // When
-        var result = LogicClass.unavailableRoomsList(checkingDate);
+        var result = LogicClass.unavailableRoomsListByDate(checkingDate);
 
         // Then
         Assert.Empty(result);
@@ -643,11 +643,11 @@ public class UnitTest1
         LogicClass.roomList.Add((reservedRoomNumber, DataClass.RoomType.Single));
 
         // When
-        var result = LogicClass.unavailableRoomsList(checkingDate);
+        var result = LogicClass.unavailableRoomsListByDate(checkingDate);
 
         // Then
-        Assert.Single(result); 
-       
+        Assert.Single(result);
+
     }
 
 

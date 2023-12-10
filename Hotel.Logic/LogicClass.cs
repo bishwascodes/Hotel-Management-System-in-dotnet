@@ -177,7 +177,7 @@ public class LogicClass
 
 
     // Methods 
-    public static List<(int, DataClass.RoomType)> availableRoomsList(DateOnly checkingDate)
+    public static List<(int, DataClass.RoomType)> availableRoomsListByDate(DateOnly checkingDate)
     {
         List<(int, string)> rooms = new();
         List<int> numbers = new();
@@ -201,7 +201,7 @@ public class LogicClass
         // Check if tempRoomList is empty, and if so, return a new empty list
         return tempRoomList.Count > 0 ? tempRoomList : new List<(int, DataClass.RoomType)>();
     }
-    public static List<(int, DataClass.RoomType)> unavailableRoomsList(DateOnly checkingDate)
+    public static List<(int, DataClass.RoomType)> unavailableRoomsListByDate(DateOnly checkingDate)
     {
         List<(int, DataClass.RoomType)> unavailableRooms = new List<(int, DataClass.RoomType)>();
 

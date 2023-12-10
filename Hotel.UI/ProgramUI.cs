@@ -25,7 +25,6 @@ do
     if (userChoice == 1)
     {
         customerManagementUI();
-
     }
     else if (userChoice == 2)
     {
@@ -767,7 +766,7 @@ void availableRoomSearchByDateUI()
     Console.Clear();
     Console.WriteLine("***  Reservation Management  *** Available Room Search by Date  *** \n ");
     DateOnly checkingDate = getDate("Please enter the date to search: ");
-    var availableRoomLists = LogicClass.availableRoomsList(checkingDate);
+    var availableRoomLists = LogicClass.availableRoomsListByDate(checkingDate);
     if (availableRoomLists.Count == 0)
     {
         Console.WriteLine($"Sorry! No any rooms available to book for the day '{checkingDate}'. ");
@@ -840,9 +839,9 @@ void utilizationReportForADayUI()
     Console.WriteLine($"Here's the List of Already Booked Rooms For the day '{inputDate}' ");
     Console.WriteLine($"[Room Number] -> [Room Type]");
     decimal rental = 0;
-    for (int i = 0; i < LogicClass.unavailableRoomsList(inputDate).Count; i++)
+    for (int i = 0; i < LogicClass.unavailableRoomsListByDate(inputDate).Count; i++)
     {
-        var item = LogicClass.unavailableRoomsList(inputDate)[i];
+        var item = LogicClass.unavailableRoomsListByDate(inputDate)[i];
 
         Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
         var theReservation = LogicClass.getReservationDetails(LogicClass.GetReservationNumberByDateAndRoom(inputDate, item.Item1));
@@ -851,14 +850,14 @@ void utilizationReportForADayUI()
 
     Console.WriteLine($"\n\nHere's the List of Available Rooms For the day '{inputDate}' ");
     Console.WriteLine($"[Room Number] -> [Room Type]");
-    foreach (var item in LogicClass.availableRoomsList(inputDate))
+    foreach (var item in LogicClass.availableRoomsListByDate(inputDate))
     {
         Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
     }
 
-    Console.WriteLine($"\n\nThe total rental earning for {LogicClass.unavailableRoomsList(inputDate).Count} no. of rooms for today is ${rental}.");
+    Console.WriteLine($"\n\nThe total rental earning for {LogicClass.unavailableRoomsListByDate(inputDate).Count} no. of rooms for today is ${rental}.");
 
-    double occupancyRate = (Double)LogicClass.unavailableRoomsList(inputDate).Count / (Double)LogicClass.roomList.Count;
+    double occupancyRate = (Double)LogicClass.unavailableRoomsListByDate(inputDate).Count / (Double)LogicClass.roomList.Count;
     occupancyRate = occupancyRate * 100;
     Console.WriteLine($"\nThe occupancy rate for today is {occupancyRate}%.");
 
@@ -885,7 +884,7 @@ void utilizationReportForDateRangeUI()
         Console.WriteLine($"[Room Number] -> [Room Type]");
         decimal dailyRental = 0;
 
-        foreach (var item in LogicClass.unavailableRoomsList(currentDate))
+        foreach (var item in LogicClass.unavailableRoomsListByDate(currentDate))
         {
             Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
             var theReservation = LogicClass.getReservationDetails(LogicClass.GetReservationNumberByDateAndRoom(currentDate, item.Item1));
@@ -893,18 +892,18 @@ void utilizationReportForDateRangeUI()
         }
 
         totalRental += dailyRental;
-        totalBookedRooms += LogicClass.unavailableRoomsList(currentDate).Count;
+        totalBookedRooms += LogicClass.unavailableRoomsListByDate(currentDate).Count;
 
         Console.WriteLine($"\n\nHere's the List of Available Rooms For the day '{currentDate}' ");
         Console.WriteLine($"[Room Number] -> [Room Type]");
-        foreach (var item in LogicClass.availableRoomsList(currentDate))
+        foreach (var item in LogicClass.availableRoomsListByDate(currentDate))
         {
             Console.WriteLine($"[{item.Item1,-11}] -> [{item.Item2,-9}] ");
         }
 
-        Console.WriteLine($"\n\nThe total rental earning for {LogicClass.unavailableRoomsList(currentDate).Count} no. of rooms for today is ${dailyRental}.");
+        Console.WriteLine($"\n\nThe total rental earning for {LogicClass.unavailableRoomsListByDate(currentDate).Count} no. of rooms for today is ${dailyRental}.");
 
-        double occupancyRate = (Double)LogicClass.unavailableRoomsList(currentDate).Count / (Double)LogicClass.roomList.Count;
+        double occupancyRate = (Double)LogicClass.unavailableRoomsListByDate(currentDate).Count / (Double)LogicClass.roomList.Count;
         occupancyRate = occupancyRate * 100;
         Console.WriteLine($"\nThe occupancy rate for today is {occupancyRate}%.\n");
     }

@@ -20,7 +20,7 @@ namespace Desktop_App
 
 
             DateOnly checkingDate = DateOnly.FromDateTime(ourDate.Value);
-            var availableRoomLists = LogicClass.availableRoomsList(checkingDate);
+            var availableRoomLists = LogicClass.availableRoomsListByDate(checkingDate);
             if (availableRoomLists.Count == 0)
             {
                 DisplayValue += $"Sorry! No any rooms available to book for the day '{checkingDate}'. ";
